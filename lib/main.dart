@@ -1,6 +1,7 @@
 import 'package:expense_tracker/core/di/injection.dart';
 import 'package:expense_tracker/core/service/notification_service.dart';
 import 'package:expense_tracker/core/theme/app_theme.dart';
+import 'package:expense_tracker/core/theme/theme_cubit.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
@@ -30,16 +31,23 @@ void main() async {
   setupDependencies();
   await getIt<NotificationService>().initialize();
   await getIt<GoogleSignIn>().initialize();
-  runApp(const MyApp());
+
+  // Load saved theme before the first frame
+  final themeCubit = ThemeCubit();
+  await themeCubit.load();
+
+  runApp(MyApp(themeCubit: themeCubit));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final ThemeCubit themeCubit;
+  const MyApp({super.key, required this.themeCubit});
 
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
+        BlocProvider.value(value: themeCubit),
         BlocProvider(
           create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),
         ),
@@ -53,29 +61,34 @@ class MyApp extends StatelessWidget {
             context.read<BudgetBloc>().add(LoadBudgets(state.user.id));
           }
         },
-        child: MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Expense Tracker',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: ThemeMode.system,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('en'), Locale('ar')],
-          initialRoute: '/',
-          routes: {
-            '/': (context) => const SplashScreen(),
-            '/auth': (context) => const AuthWrapper(),
-            '/onboarding': (context) => const OnboardingScreen(),
-            '/login': (context) => const LoginScreen(),
-            '/register': (context) => const RegisterScreen(),
-            '/profile': (context) => const ProfileScreen(),
-            '/settings': (context) => const SettingsScreen(),
-            '/categories': (context) => const CategoriesScreen(),
+        // BlocBuilder on ThemeCubit so the whole app rebuilds on theme change
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Expense Tracker',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en'), Locale('ar')],
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const SplashScreen(),
+                '/auth': (context) => const AuthWrapper(),
+                '/onboarding': (context) => const OnboardingScreen(),
+                '/login': (context) => const LoginScreen(),
+                '/register': (context) => const RegisterScreen(),
+                '/profile': (context) => const ProfileScreen(),
+                '/settings': (context) => const SettingsScreen(),
+                '/categories': (context) => const CategoriesScreen(),
+              },
+            );
           },
         ),
       ),

@@ -1,6 +1,5 @@
 import 'package:expense_tracker/core/di/injection.dart';
 import 'package:expense_tracker/core/service/notification_service.dart';
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BudgetCard extends StatefulWidget {
@@ -55,14 +54,16 @@ class _BudgetCardState extends State<BudgetCard> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surfaceContainer,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.2),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.2),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.02),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.02),
             blurRadius: 4,
             offset: const Offset(0, 2),
           ),
@@ -80,10 +81,10 @@ class _BudgetCardState extends State<BudgetCard> {
               ),
               IconButton(
                 onPressed: widget.onSetBudget,
-                icon: const Icon(
+                icon: Icon(
                   Icons.edit_outlined,
                   size: 20,
-                  color: AppColors.primary,
+                  color: Theme.of(context).colorScheme.secondary,
                 ),
               ),
             ],
@@ -92,7 +93,9 @@ class _BudgetCardState extends State<BudgetCard> {
           if (widget.budget == 0)
             Text(
               widget.isAr ? 'لم تحدد ميزانية بعد' : 'No budget set yet',
-              style: textTheme.bodyMedium?.copyWith(color: AppColors.outline),
+              style: textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.outline,
+              ),
             )
           else ...[
             Row(
@@ -105,7 +108,7 @@ class _BudgetCardState extends State<BudgetCard> {
                     Text(
                       widget.isAr ? 'المصروف' : 'Spent so far',
                       style: textTheme.labelMedium?.copyWith(
-                        color: AppColors.outline,
+                        color: Theme.of(context).colorScheme.outline,
                       ),
                     ),
                     Text(
@@ -113,7 +116,9 @@ class _BudgetCardState extends State<BudgetCard> {
                       style: textTheme.headlineLarge?.copyWith(
                         fontSize: 28,
                         fontWeight: FontWeight.bold,
-                        color: isOver ? AppColors.expense : AppColors.onSurface,
+                        color: isOver
+                            ? Theme.of(context).colorScheme.error
+                            : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -121,7 +126,7 @@ class _BudgetCardState extends State<BudgetCard> {
                 Text(
                   '/ \$${widget.budget.toInt()}',
                   style: textTheme.titleMedium?.copyWith(
-                    color: AppColors.onSurfaceVariant,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -131,7 +136,7 @@ class _BudgetCardState extends State<BudgetCard> {
               height: 4,
               width: double.infinity,
               decoration: BoxDecoration(
-                color: AppColors.surfaceContainerHighest,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(100),
               ),
               child: FractionallySizedBox(
@@ -139,7 +144,9 @@ class _BudgetCardState extends State<BudgetCard> {
                 widthFactor: progress,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: isOver ? AppColors.expense : AppColors.primary,
+                    color: isOver
+                        ? Theme.of(context).colorScheme.error
+                        : Theme.of(context).colorScheme.primary,
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
@@ -152,13 +159,15 @@ class _BudgetCardState extends State<BudgetCard> {
                 Text(
                   widget.isAr ? '$daysLeft يوم متبقي' : '$daysLeft days left',
                   style: textTheme.labelMedium?.copyWith(
-                    color: AppColors.outline,
+                    color: Theme.of(context).colorScheme.outline,
                   ),
                 ),
                 Text(
                   '${(progress * 100).toInt()}%',
                   style: textTheme.labelLarge?.copyWith(
-                    color: isOver ? AppColors.expense : AppColors.primary,
+                    color: isOver
+                        ? Theme.of(context).colorScheme.error
+                        : Theme.of(context).colorScheme.primary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

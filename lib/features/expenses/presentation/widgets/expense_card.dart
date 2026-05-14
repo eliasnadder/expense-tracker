@@ -18,10 +18,12 @@ class ExpenseCard extends StatelessWidget {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
       child: Row(
@@ -59,7 +61,7 @@ class ExpenseCard extends StatelessWidget {
                 Text(
                   '${expense.category} • ${DateFormat('MMM dd, h:mm a').format(expense.date)}',
                   style: textTheme.labelMedium?.copyWith(
-                    color: AppColors.outline,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -73,16 +75,16 @@ class ExpenseCard extends StatelessWidget {
                 style: textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                   color: expense.isIncome
-                      ? AppColors.income
-                      : AppColors.onSurface,
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                icon: const Icon(
+                icon: Icon(
                   Icons.delete_outline,
-                  color: AppColors.expense,
+                  color: Theme.of(context).colorScheme.error,
                   size: 18,
                 ),
                 onPressed: onDelete,

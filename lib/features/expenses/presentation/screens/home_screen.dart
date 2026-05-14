@@ -1,8 +1,7 @@
 import 'package:expense_tracker/core/constants/expense_categories.dart';
 import 'package:expense_tracker/core/di/injection.dart';
 import 'package:expense_tracker/core/theme/app_theme.dart';
- import 'package:expense_tracker/utilities/icon_helper.dart';
-
+import 'package:expense_tracker/utilities/icon_helper.dart';
 
 import 'package:expense_tracker/features/ai_insight/presentation/bloc/ai_bloc.dart';
 import 'package:expense_tracker/features/analytics/presentation/screens/analytics_screen.dart';
@@ -272,11 +271,15 @@ class _CategorySection extends StatelessWidget {
   Widget build(BuildContext context) {
     final categories = [
       {'id': 'All', 'name': isAr ? 'الكل' : 'All', 'icon': Icons.grid_view},
-      ...kCategories.take(6).map((c) => {
-        'id': c.name,
-        'name': isAr ? c.nameAr : c.name,
-        'icon': getIconForCategory(c.name),
-      }),
+      ...kCategories
+          .take(6)
+          .map(
+            (c) => {
+              'id': c.name,
+              'name': isAr ? c.nameAr : c.name,
+              'icon': getIconForCategory(c.name),
+            },
+          ),
     ];
 
     return SingleChildScrollView(
@@ -293,12 +296,14 @@ class _CategorySection extends StatelessWidget {
               onSelected: (_) => onSelected(id),
               label: Text(cat['name'] as String),
               avatar: Icon(cat['icon'] as IconData, size: 16),
-              backgroundColor: AppColors.surfaceContainerLowest,
-              selectedColor: AppColors.secondaryContainer,
+              backgroundColor: Theme.of(
+                context,
+              ).colorScheme.surfaceContainerLowest,
+              selectedColor: Theme.of(context).colorScheme.secondaryContainer,
               labelStyle: TextStyle(
                 color: isSelected
-                    ? AppColors.onSecondaryContainer
-                    : AppColors.onSurface,
+                    ? Theme.of(context).colorScheme.onSecondaryContainer
+                    : Theme.of(context).colorScheme.onSurface,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               shape: RoundedRectangleBorder(
@@ -444,10 +449,12 @@ class _SummaryCard extends StatelessWidget {
       padding: const EdgeInsets.all(24),
       width: double.infinity,
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainer,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.1),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
       child: Stack(
@@ -459,7 +466,7 @@ class _SummaryCard extends StatelessWidget {
               width: 120,
               height: 120,
               decoration: BoxDecoration(
-                color: AppColors.primaryContainer.withValues(alpha: 0.1),
+                color: Theme.of(context).colorScheme.primaryContainer,
                 shape: BoxShape.circle,
               ),
             ),
@@ -470,7 +477,7 @@ class _SummaryCard extends StatelessWidget {
               Text(
                 isAr ? 'إجمالي الرصيد' : 'Total Balance',
                 style: theme.textTheme.titleMedium?.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               if (name.isNotEmpty) ...[
@@ -478,7 +485,7 @@ class _SummaryCard extends StatelessWidget {
                 Text(
                   isAr ? 'مرحباً، $name' : 'Hi, $name',
                   style: theme.textTheme.bodyMedium?.copyWith(
-                    color: AppColors.onSurfaceVariant,
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                 ),
               ],
@@ -488,7 +495,7 @@ class _SummaryCard extends StatelessWidget {
                 style: theme.textTheme.displayLarge?.copyWith(
                   fontSize: 42,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.onSurface,
+                  color: Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               const SizedBox(height: 16),
