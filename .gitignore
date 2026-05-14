@@ -1,0 +1,80 @@
+# -----------------------------------------------------------------------
+# Flutter/Dart Basic
+# -----------------------------------------------------------------------
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+
+# -----------------------------------------------------------------------
+# Android Related
+# -----------------------------------------------------------------------
+/android/app/debug
+/android/app/profile
+/android/app/release
+*.keystore
+*.jks
+app.*.symbols
+app.*.map.json
+
+# -----------------------------------------------------------------------
+# iOS Related
+# -----------------------------------------------------------------------
+*.swp
+*.lock
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+/ios/Pods
+/ios/Runner.xcworkspace
+/ios/Flutter/Generated.xcconfig
+/ios/Flutter/flutter_export_environment.sh
+/ios/ServiceDefinitions.json
+/ios/Runner/GeneratedPluginRegistrant.h
+/ios/Runner/GeneratedPluginRegistrant.m
+
+# -----------------------------------------------------------------------
+# Firebase & FlutterFire (مهم جداً)
+# -----------------------------------------------------------------------
+.firebase/
+firebase-debug.log
+firebase-debug.*.log
+# استبعاد ملفات الإعدادات لحماية مفاتيح الربط
+lib/firebase_options.dart
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+firebase.json
+
+# -----------------------------------------------------------------------
+# Shorebird (تحديثات هوائية)
+# -----------------------------------------------------------------------
+.shorebird/
+shorebird.yaml.tmp
+
+# -----------------------------------------------------------------------
+# IDEs & Editors
+# -----------------------------------------------------------------------
+# IntelliJ / Android Studio
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Visual Studio Code
+.vscode/
+
+# MacOS Metadata
+.DS_Store
+
+# -----------------------------------------------------------------------
+# Miscellaneous / Environment
+# -----------------------------------------------------------------------
+.env
+*.log
+.history
+migrate_working_dir/

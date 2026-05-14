@@ -1,0 +1,22 @@
+{
+  "@@locale": "ar",
+  "appTitle": "تتبع المصروفات",
+  "signInWithGoogle": "تسجيل الدخول بـ Google",
+  "signOut": "تسجيل الخروج",
+  "home": "الرئيسية",
+  "expenses": "المصاريف",
+  "analytics": "التحليلات",
+  "settings": "الإعدادات",
+  "addExpense": "إضافة مصروف",
+  "amount": "المبلغ",
+  "category": "الفئة",
+  "description": "الوصف",
+  "date": "التاريخ",
+  "save": "حفظ",
+  "cancel": "إلغاء",
+  "delete": "حذف",
+  "budget": "الميزانية",
+  "aiInsights": "تحليلات الذكاء",
+  "totalSpent": "إجمالي المصروف",
+  "remaining": "المتبقي"
+}

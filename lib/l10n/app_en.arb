@@ -1,0 +1,22 @@
+{
+  "@@locale": "en",
+  "appTitle": "Expense Tracker",
+  "signInWithGoogle": "Sign in with Google",
+  "signOut": "Sign Out",
+  "home": "Home",
+  "expenses": "Expenses",
+  "analytics": "Analytics",
+  "settings": "Settings",
+  "addExpense": "Add Expense",
+  "amount": "Amount",
+  "category": "Category",
+  "description": "Description",
+  "date": "Date",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "budget": "Budget",
+  "aiInsights": "AI Insights",
+  "totalSpent": "Total Spent",
+  "remaining": "Remaining"
+}
