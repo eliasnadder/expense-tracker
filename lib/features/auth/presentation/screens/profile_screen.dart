@@ -18,20 +18,8 @@ class ProfileScreen extends StatelessWidget {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
-      appBar: AppBar(
-        title: Text(isAr ? 'الملف الشخصي' : 'Profile'),
-        actions: [
-          IconButton(
-            tooltip: isAr ? 'الإعدادات' : 'Settings',
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const SettingsScreen()),
-            ),
-            icon: const Icon(Icons.settings_outlined),
-          ),
-        ],
-      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      appBar: AppBar(title: Text(isAr ? 'الملف الشخصي' : 'Profile')),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, authState) {
           final user = authState is AuthAuthenticated ? authState.user : null;
@@ -116,10 +104,9 @@ class ProfileScreen extends StatelessWidget {
                     ),
                     onSignOut: () {
                       context.read<AuthBloc>().add(SignOutRequested());
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login',
-                        (route) => false,
-                      );
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/login', (route) => false);
                     },
                   ),
                   const SizedBox(height: 16),
@@ -128,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                         ? 'يتم تحديث أرقام هذا الشهر من معاملاتك الحالية.'
                         : 'Monthly figures update from your current transactions.',
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.onSurfaceVariant,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -245,10 +232,12 @@ class _MetricCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -261,7 +250,7 @@ class _MetricCard extends StatelessWidget {
           Text(
             value,
             style: textTheme.titleLarge?.copyWith(
-              color: AppColors.onSurface,
+              color: Theme.of(context).colorScheme.onSurface,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -280,10 +269,12 @@ class _ProfilePanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.3),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
       child: Column(children: children),
@@ -305,12 +296,12 @@ class _ProfileRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: AppColors.primary),
+      leading: Icon(icon, color: Theme.of(context).colorScheme.primary),
       title: Text(title),
       trailing: Text(
         value,
         style: Theme.of(context).textTheme.labelLarge?.copyWith(
-          color: AppColors.onSurface,
+          color: Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.bold,
         ),
       ),
@@ -334,9 +325,9 @@ class _ActionPanel extends StatelessWidget {
     return _ProfilePanel(
       children: [
         ListTile(
-          leading: const Icon(
+          leading: Icon(
             Icons.settings_outlined,
-            color: AppColors.primary,
+            color: Theme.of(context).colorScheme.primary,
           ),
           title: Text(isAr ? 'الإعدادات' : 'Settings'),
           subtitle: Text(
@@ -348,10 +339,13 @@ class _ActionPanel extends StatelessWidget {
           onTap: onSettings,
         ),
         ListTile(
-          leading: const Icon(Icons.logout, color: AppColors.expense),
+          leading: Icon(
+            Icons.logout,
+            color: Theme.of(context).colorScheme.error,
+          ),
           title: Text(
             isAr ? 'تسجيل الخروج' : 'Sign out',
-            style: const TextStyle(color: AppColors.expense),
+            style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
           onTap: onSignOut,
         ),

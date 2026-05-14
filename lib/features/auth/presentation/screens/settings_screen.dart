@@ -1,4 +1,5 @@
 import 'package:expense_tracker/core/theme/app_theme.dart';
+import 'package:expense_tracker/core/theme/theme_cubit.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
@@ -18,7 +19,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _biometricLock = false;
   String _currency = 'USD';
   String _language = 'English';
-  String _themeMode = 'System';
 
   void _showSaved() {
     ScaffoldMessenger.of(context).showSnackBar(
@@ -31,8 +31,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final textTheme = Theme.of(context).textTheme;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
+    // Read current theme mode from the cubit to keep the picker in sync
+    final currentThemeMode = context.watch<ThemeCubit>().state;
+    final currentThemeLabel = ThemeCubit.toLabel(currentThemeMode);
+
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(isAr ? 'الإعدادات' : 'Settings'),
         actions: [
@@ -51,6 +55,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 photoUrl: user?.photoUrl,
               ),
               const SizedBox(height: 20),
+
+              // ── Preferences ───────────────────────────────────────────────
               _SettingsSection(
                 title: isAr ? 'التفضيلات' : 'Preferences',
                 children: [
@@ -62,7 +68,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: isAr ? 'العملة' : 'Currency',
                       values: const ['USD', 'EUR', 'GBP', 'SYP'],
                       current: _currency,
-                      onChanged: (value) => setState(() => _currency = value),
+                      onChanged: (v) => setState(() => _currency = v),
                     ),
                   ),
                   _OptionTile(
@@ -73,23 +79,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       title: isAr ? 'اللغة' : 'Language',
                       values: const ['English', 'Arabic'],
                       current: _language,
-                      onChanged: (value) => setState(() => _language = value),
+                      onChanged: (v) => setState(() => _language = v),
                     ),
                   ),
+                  // ── Appearance (Dark mode) ────────────────────────────────
                   _OptionTile(
-                    icon: Icons.dark_mode_outlined,
+                    icon: _themeIcon(currentThemeMode),
                     title: isAr ? 'المظهر' : 'Appearance',
-                    value: _themeMode,
+                    value: currentThemeLabel,
                     onTap: () => _pickValue(
                       title: isAr ? 'المظهر' : 'Appearance',
                       values: const ['System', 'Light', 'Dark'],
-                      current: _themeMode,
-                      onChanged: (value) => setState(() => _themeMode = value),
+                      current: currentThemeLabel,
+                      onChanged: (label) {
+                        // Actually apply the theme via ThemeCubit
+                        context.read<ThemeCubit>().setTheme(label);
+                      },
                     ),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
+
+              // ── Notifications ─────────────────────────────────────────────
               _SettingsSection(
                 title: isAr ? 'التنبيهات' : 'Notifications',
                 children: [
@@ -100,7 +112,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ? 'نبهني عند الاقتراب من الحد'
                         : 'Warn me near spending limits',
                     value: _budgetAlerts,
-                    onChanged: (value) => setState(() => _budgetAlerts = value),
+                    onChanged: (v) => setState(() => _budgetAlerts = v),
                   ),
                   _SwitchTile(
                     icon: Icons.summarize_outlined,
@@ -109,12 +121,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ? 'تقرير مختصر عن نشاطك'
                         : 'A compact activity recap',
                     value: _weeklySummary,
-                    onChanged: (value) =>
-                        setState(() => _weeklySummary = value),
+                    onChanged: (v) => setState(() => _weeklySummary = v),
                   ),
                 ],
               ),
               const SizedBox(height: 16),
+
+              // ── Security ──────────────────────────────────────────────────
               _SettingsSection(
                 title: isAr ? 'الأمان' : 'Security',
                 children: [
@@ -125,8 +138,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ? 'اطلب التحقق عند فتح التطبيق'
                         : 'Require verification on app open',
                     value: _biometricLock,
-                    onChanged: (value) =>
-                        setState(() => _biometricLock = value),
+                    onChanged: (v) => setState(() => _biometricLock = v),
                   ),
                   _OptionTile(
                     icon: Icons.logout,
@@ -135,21 +147,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     destructive: true,
                     onTap: () {
                       context.read<AuthBloc>().add(SignOutRequested());
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login',
-                        (route) => false,
-                      );
+                      Navigator.of(
+                        context,
+                      ).pushNamedAndRemoveUntil('/login', (route) => false);
                     },
                   ),
                 ],
               ),
               const SizedBox(height: 20),
+
               Text(
                 isAr
                     ? 'بعض الإعدادات محفوظة محلياً حالياً إلى أن يتم ربط ملف المستخدم.'
                     : 'Some settings are currently local until profile sync is connected.',
                 style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
             ],
@@ -158,6 +170,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+
+  IconData _themeIcon(ThemeMode mode) => switch (mode) {
+    ThemeMode.dark => Icons.dark_mode,
+    ThemeMode.light => Icons.light_mode,
+    ThemeMode.system => Icons.brightness_auto,
+  };
 
   Future<void> _pickValue({
     required String title,
@@ -201,6 +219,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 }
 
+// ─── Reusable sub-widgets ─────────────────────────────────────────────────────
+
 class _AccountHeader extends StatelessWidget {
   final String name;
   final String email;
@@ -215,26 +235,26 @@ class _AccountHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final cs = Theme.of(context).colorScheme;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: cs.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.3),
-        ),
+        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           CircleAvatar(
             radius: 28,
-            backgroundColor: AppColors.primaryContainer,
+            backgroundColor: cs.primaryContainer,
             backgroundImage: photoUrl != null ? NetworkImage(photoUrl!) : null,
             child: photoUrl == null
                 ? Text(
                     name.isNotEmpty ? name.characters.first.toUpperCase() : 'U',
                     style: textTheme.titleLarge?.copyWith(
-                      color: AppColors.onPrimaryContainer,
+                      color: cs.onPrimaryContainer,
                       fontWeight: FontWeight.bold,
                     ),
                   )
@@ -276,6 +296,7 @@ class _SettingsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -285,17 +306,15 @@ class _SettingsSection extends StatelessWidget {
             title,
             style: Theme.of(context).textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppColors.onSurface,
+              color: cs.onSurface,
             ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
+            color: cs.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.outlineVariant.withValues(alpha: 0.3),
-            ),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.3)),
           ),
           child: Column(children: children),
         ),
@@ -321,12 +340,10 @@ class _OptionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = destructive ? AppColors.expense : AppColors.onSurface;
+    final cs = Theme.of(context).colorScheme;
+    final color = destructive ? cs.error : cs.onSurface;
     return ListTile(
-      leading: Icon(
-        icon,
-        color: destructive ? AppColors.expense : AppColors.primary,
-      ),
+      leading: Icon(icon, color: destructive ? cs.error : cs.primary),
       title: Text(title, style: TextStyle(color: color)),
       trailing: value.isEmpty
           ? const Icon(Icons.chevron_right)
@@ -360,12 +377,13 @@ class _SwitchTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return SwitchListTile(
-      secondary: Icon(icon, color: AppColors.primary),
+      secondary: Icon(icon, color: cs.primary),
       title: Text(title),
       subtitle: Text(subtitle),
       value: value,
-      activeThumbColor: AppColors.primary,
+      activeColor: cs.primary,
       onChanged: onChanged,
     );
   }

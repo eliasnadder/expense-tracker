@@ -27,33 +27,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
     final monthLabel = DateFormat('MMMM yyyy').format(DateTime.now());
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
-      appBar: AppBar(
-        backgroundColor: AppColors.surface,
-        elevation: 0,
-        title: Text(
-          isAr ? 'التقارير المالية' : 'Financial Reports',
-          style: textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
-        ),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 16),
-            child: ActionChip(
-              avatar: const Icon(Icons.calendar_month, size: 18),
-              label: Text(monthLabel),
-              onPressed: null,
-              backgroundColor: AppColors.surfaceContainerHigh,
-              side: BorderSide.none,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-            ),
-          ),
-        ],
-      ),
+      backgroundColor: theme.colorScheme.surface,
       body: BlocBuilder<ExpenseBloc, ExpenseState>(
         builder: (context, state) {
           if (state is ExpenseLoading) {
@@ -75,16 +49,17 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
               children: [
                 Text(
                   isAr ? 'التقارير الشهرية' : 'Monthly Reports',
-                  style: textTheme.titleMedium?.copyWith(
+                  style: textTheme.displaySmall?.copyWith(
                     fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
                   ),
                 ),
                 Text(
                   isAr
                       ? 'راجع أداءك المالي لشهر $monthLabel.'
                       : 'Review your financial performance for $monthLabel.',
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.onSurfaceVariant,
+                  style: textTheme.bodyLarge?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -102,16 +77,20 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                       amount: totalIncome,
                       trend: '+12.5%',
                       icon: Icons.arrow_upward,
-                      iconBg: AppColors.tertiary.withValues(alpha: 0.1),
-                      iconColor: AppColors.tertiary,
+                      iconBg: Theme.of(
+                        context,
+                      ).colorScheme.tertiary.withValues(alpha: 0.1),
+                      iconColor: Theme.of(context).colorScheme.tertiary,
                     ),
                     _SummaryCard(
                       title: isAr ? 'إجمالي المصاريف' : 'Total Expenses',
                       amount: totalExpenses,
                       trend: '-4.2%',
                       icon: Icons.arrow_downward,
-                      iconBg: AppColors.expense.withValues(alpha: 0.1),
-                      iconColor: AppColors.expense,
+                      iconBg: Theme.of(
+                        context,
+                      ).colorScheme.onError.withValues(alpha: 0.1),
+                      iconColor: Theme.of(context).colorScheme.onError,
                     ),
                     _SavingsCard(
                       title: isAr ? 'صافي الادخار' : 'Net Savings',
@@ -137,10 +116,12 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                 const SizedBox(height: 16),
                 Container(
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLowest,
+                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
                     borderRadius: BorderRadius.circular(28),
                     border: Border.all(
-                      color: AppColors.outlineVariant.withValues(alpha: 0.5),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.outlineVariant.withValues(alpha: 0.5),
                     ),
                   ),
                   child: Column(
@@ -151,7 +132,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             ? 'ملخص مرئي مفصل لشهر $monthLabel'
                             : 'Detailed visual summary of $monthLabel',
                         icon: Icons.picture_as_pdf,
-                        iconColor: AppColors.primary,
+                        iconColor: Theme.of(context).colorScheme.primary,
                         isLast: false,
                       ),
                       _ReportItem(
@@ -160,7 +141,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             ? 'بيانات المعاملات الخام للجداول'
                             : 'Raw transaction data for spreadsheets',
                         icon: Icons.table_view,
-                        iconColor: AppColors.tertiary,
+                        iconColor: Theme.of(context).colorScheme.tertiary,
                         isLast: false,
                       ),
                       _ReportItem(
@@ -169,7 +150,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                             ? 'عرض مصنف لإعداد الضرائب'
                             : 'Categorized view for tax preparation',
                         icon: Icons.request_quote,
-                        iconColor: AppColors.secondary,
+                        iconColor: Theme.of(context).colorScheme.secondary,
                         isLast: true,
                       ),
                     ],
@@ -191,13 +172,16 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                         ),
                       );
                     },
-                    icon: const Icon(Icons.add, color: Colors.white),
+                    icon: Icon(
+                      Icons.add,
+                      color: Theme.of(context).colorScheme.onPrimary,
+                    ),
                     label: Text(
                       isAr ? 'إنشاء تقرير جديد' : 'Generate New Report',
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
+                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32,
                         vertical: 16,
@@ -241,10 +225,12 @@ class _SummaryCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: AppColors.outlineVariant.withValues(alpha: 0.5),
+          color: Theme.of(
+            context,
+          ).colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
       child: Column(
@@ -266,7 +252,7 @@ class _SummaryCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: AppColors.surfaceContainerHigh,
+                  color: Theme.of(context).colorScheme.surfaceContainerHigh,
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
@@ -284,7 +270,7 @@ class _SummaryCard extends StatelessWidget {
               Text(
                 title,
                 style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.onSurfaceVariant,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                 ),
               ),
               Text(
@@ -312,11 +298,11 @@ class _SavingsCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: Theme.of(context).colorScheme.primaryContainer,
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withValues(alpha: 0.3),
+            color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.3),
             blurRadius: 15,
             offset: const Offset(0, 8),
           ),
@@ -331,7 +317,9 @@ class _SavingsCard extends StatelessWidget {
               width: 80,
               height: 80,
               decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onPrimary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
             ),
@@ -347,12 +335,12 @@ class _SavingsCard extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Theme.of(context).colorScheme.onPrimary,
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.account_balance,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   Container(
@@ -361,14 +349,14 @@ class _SavingsCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.2),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.onPrimary.withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(100),
                     ),
-                    child: const Text(
+                    child: Text(
                       'Target Met',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 10,
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -380,13 +368,13 @@ class _SavingsCard extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: const TextStyle(color: Colors.white70, fontSize: 12),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                   ),
                   Text(
                     '\$${NumberFormat("#,##0.00").format(amount)}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 22,
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -424,10 +412,12 @@ class _AiInsightPanel extends StatelessWidget {
           width: double.infinity,
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
-            color: AppColors.surfaceContainerLowest,
+            color: Theme.of(context).colorScheme.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: AppColors.primary.withValues(alpha: 0.18),
+              color: Theme.of(
+                context,
+              ).colorScheme.primary.withValues(alpha: 0.18),
             ),
           ),
           child: Column(
@@ -439,12 +429,14 @@ class _AiInsightPanel extends StatelessWidget {
                     width: 44,
                     height: 44,
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    child: const Icon(
+                    child: Icon(
                       Icons.auto_awesome,
-                      color: AppColors.primary,
+                      color: Theme.of(context).colorScheme.primary,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -509,7 +501,7 @@ class _AiInsightPanel extends StatelessWidget {
                       ? 'تعذر تشغيل التحليل. تحقق من مفتاح Gemini أو الاتصال.'
                       : 'Analysis failed. Check the Gemini key or connection.',
                   style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.expense,
+                    color: Theme.of(context).colorScheme.onError,
                   ),
                 )
               else
@@ -565,7 +557,9 @@ class _ReportItem extends StatelessWidget {
               ? null
               : Border(
                   bottom: BorderSide(
-                    color: AppColors.outlineVariant.withValues(alpha: 0.3),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.outlineVariant.withValues(alpha: 0.3),
                   ),
                 ),
         ),
@@ -575,7 +569,9 @@ class _ReportItem extends StatelessWidget {
               width: 48,
               height: 48,
               decoration: BoxDecoration(
-                color: iconColor.withValues(alpha: 0.1),
+                color: Theme.of(
+                  context,
+                ).colorScheme.primary.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: Icon(icon, color: iconColor),
@@ -594,13 +590,16 @@ class _ReportItem extends StatelessWidget {
                   Text(
                     subtitle,
                     style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.onSurfaceVariant,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
               ),
             ),
-            const Icon(Icons.download, color: AppColors.onSurfaceVariant),
+            Icon(
+              Icons.download,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ],
         ),
       ),

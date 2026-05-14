@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_bloc.dart';
@@ -36,7 +35,7 @@ class BudgetsScreen extends StatelessWidget {
                     : 0.0;
 
                 return Scaffold(
-                  backgroundColor: AppColors.surface,
+                  backgroundColor: theme.colorScheme.surface,
                   body: SingleChildScrollView(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 20,
@@ -49,7 +48,7 @@ class BudgetsScreen extends StatelessWidget {
                           isAr ? 'الميزانيات' : 'Budgets',
                           style: textTheme.displaySmall?.copyWith(
                             fontWeight: FontWeight.bold,
-                            color: AppColors.onSurface,
+                            color: theme.colorScheme.onSurface,
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -58,7 +57,7 @@ class BudgetsScreen extends StatelessWidget {
                               ? 'تتبع حدود الإنفاق عبر الفئات.'
                               : 'Track your spending limits across categories.',
                           style: textTheme.bodyLarge?.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 32),
@@ -67,11 +66,13 @@ class BudgetsScreen extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: AppColors.primaryContainer,
+                            color: theme.colorScheme.primaryContainer,
                             borderRadius: BorderRadius.circular(28),
                             boxShadow: [
                               BoxShadow(
-                                color: AppColors.primary.withValues(alpha: 0.2),
+                                color: theme.colorScheme.primary.withValues(
+                                  alpha: 0.2,
+                                ),
                                 blurRadius: 15,
                                 offset: const Offset(0, 8),
                               ),
@@ -89,7 +90,8 @@ class BudgetsScreen extends StatelessWidget {
                                         ? 'إجمالي الميزانية الشهرية'
                                         : 'Total Monthly Budget',
                                     style: textTheme.titleMedium?.copyWith(
-                                      color: AppColors.onPrimaryContainer,
+                                      color:
+                                          theme.colorScheme.onPrimaryContainer,
                                     ),
                                   ),
                                   const Icon(
@@ -108,16 +110,17 @@ class BudgetsScreen extends StatelessWidget {
                                           '\$${NumberFormat('#,##0').format(totalSpent)}',
                                       style: textTheme.displayMedium?.copyWith(
                                         fontWeight: FontWeight.bold,
-                                        color: Colors.white,
+                                        color: theme
+                                            .colorScheme
+                                            .onPrimaryContainer,
                                       ),
                                     ),
                                     TextSpan(
                                       text:
                                           ' / \$${NumberFormat('#,##0').format(totalLimit)}',
                                       style: textTheme.titleLarge?.copyWith(
-                                        color: Colors.white.withValues(
-                                          alpha: 0.7,
-                                        ),
+                                        color:
+                                            theme.colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ],
@@ -128,7 +131,8 @@ class BudgetsScreen extends StatelessWidget {
                                 height: 12,
                                 width: double.infinity,
                                 decoration: BoxDecoration(
-                                  color: Colors.white.withValues(alpha: 0.2),
+                                  color: theme.colorScheme.onSurfaceVariant
+                                      .withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(100),
                                 ),
                                 child: FractionallySizedBox(
@@ -136,7 +140,7 @@ class BudgetsScreen extends StatelessWidget {
                                   widthFactor: totalProgress,
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Colors.white,
+                                      color: theme.colorScheme.primary,
                                       borderRadius: BorderRadius.circular(100),
                                     ),
                                   ),
@@ -148,7 +152,7 @@ class BudgetsScreen extends StatelessWidget {
                                 child: Text(
                                   '${(totalProgress * 100).toInt()}% utilized',
                                   style: textTheme.labelMedium?.copyWith(
-                                    color: Colors.white.withValues(alpha: 0.8),
+                                    color: theme.colorScheme.onPrimaryContainer,
                                   ),
                                 ),
                               ),
@@ -224,7 +228,10 @@ class _AddBudgetButton extends StatelessWidget {
       width: double.infinity,
       height: 180,
       decoration: BoxDecoration(
-        border: Border.all(color: AppColors.outlineVariant, width: 2),
+        border: Border.all(
+          color: Theme.of(context).colorScheme.outlineVariant,
+          width: 2,
+        ),
         borderRadius: BorderRadius.circular(28),
       ),
       child: Column(
@@ -233,17 +240,20 @@ class _AddBudgetButton extends StatelessWidget {
           Container(
             width: 48,
             height: 48,
-            decoration: const BoxDecoration(
-              color: AppColors.surfaceContainerHighest,
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               shape: BoxShape.circle,
             ),
-            child: const Icon(Icons.add, color: AppColors.onSurfaceVariant),
+            child: Icon(
+              Icons.add,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 12),
           Text(
             isAr ? 'إنشاء ميزانية جديدة' : 'Create New Budget',
             style: textTheme.titleMedium?.copyWith(
-              color: AppColors.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
         ],
@@ -296,11 +306,11 @@ class _BudgetCategoryCard extends StatelessWidget {
                 ? (isAr ? 'اقتربت' : 'Nearing')
                 : (isAr ? 'جيد' : 'On Track')),
       statusColor: isCritical
-          ? AppColors.expense
-          : (isWarning ? Colors.orange : AppColors.primary),
+          ? Theme.of(context).colorScheme.error
+          : (isWarning ? Colors.orange : Theme.of(context).colorScheme.primary),
       progressColor: isCritical
-          ? AppColors.expense
-          : (isWarning ? Colors.orange : AppColors.primary),
+          ? Theme.of(context).colorScheme.error
+          : (isWarning ? Colors.orange : Theme.of(context).colorScheme.primary),
       isCritical: isCritical,
       isWarning: isWarning,
     );
@@ -342,13 +352,15 @@ class _BudgetBentoCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: isCritical
-            ? AppColors.expense.withValues(alpha: 0.1)
-            : AppColors.surfaceContainerLow,
+            ? Theme.of(context).colorScheme.error.withValues(alpha: 0.1)
+            : Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: isCritical
-              ? AppColors.expense.withValues(alpha: 0.3)
-              : AppColors.outlineVariant.withValues(alpha: 0.3),
+              ? Theme.of(context).colorScheme.error.withValues(alpha: 0.3)
+              : Theme.of(
+                  context,
+                ).colorScheme.outlineVariant.withValues(alpha: 0.3),
         ),
       ),
       child: Column(
@@ -362,13 +374,19 @@ class _BudgetBentoCard extends StatelessWidget {
                 height: 44,
                 decoration: BoxDecoration(
                   color: isCritical
-                      ? AppColors.expense.withValues(alpha: 0.1)
-                      : AppColors.secondaryContainer.withValues(alpha: 0.3),
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.error.withValues(alpha: 0.1)
+                      : Theme.of(
+                          context,
+                        ).colorScheme.secondaryContainer.withValues(alpha: 0.3),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   icon,
-                  color: isCritical ? AppColors.expense : AppColors.primary,
+                  color: isCritical
+                      ? Theme.of(context).colorScheme.error
+                      : Theme.of(context).colorScheme.primary,
                   size: 24,
                 ),
               ),
@@ -379,10 +397,16 @@ class _BudgetBentoCard extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: isCritical
-                      ? AppColors.expense
+                      ? Theme.of(
+                          context,
+                        ).colorScheme.error.withValues(alpha: 0.1)
                       : (isWarning
-                            ? AppColors.expense.withValues(alpha: 0.1)
-                            : AppColors.surfaceContainerHigh),
+                            ? Theme.of(
+                                context,
+                              ).colorScheme.secondary.withValues(alpha: 0.1)
+                            : Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHigh),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
@@ -391,8 +415,8 @@ class _BudgetBentoCard extends StatelessWidget {
                     color: isCritical
                         ? Colors.white
                         : (isWarning
-                              ? AppColors.expense
-                              : AppColors.onSurfaceVariant),
+                              ? Theme.of(context).colorScheme.secondary
+                              : Theme.of(context).colorScheme.onSurfaceVariant),
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -407,7 +431,7 @@ class _BudgetBentoCard extends StatelessWidget {
           Text(
             subtitle,
             style: textTheme.bodySmall?.copyWith(
-              color: AppColors.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
           ),
           const Spacer(),
@@ -419,12 +443,16 @@ class _BudgetBentoCard extends StatelessWidget {
                 '\$${spent.toInt()}',
                 style: textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: isCritical ? AppColors.expense : AppColors.onSurface,
+                  color: isCritical
+                      ? Theme.of(context).colorScheme.error
+                      : Theme.of(context).colorScheme.onSurface,
                 ),
               ),
               Text(
                 'of \$${limit.toInt()} limit',
-                style: textTheme.labelSmall?.copyWith(color: AppColors.outline),
+                style: textTheme.labelSmall?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
+                ),
               ),
             ],
           ),
@@ -433,7 +461,7 @@ class _BudgetBentoCard extends StatelessWidget {
             height: 6,
             width: double.infinity,
             decoration: BoxDecoration(
-              color: AppColors.surfaceContainerHighest,
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(100),
             ),
             child: FractionallySizedBox(

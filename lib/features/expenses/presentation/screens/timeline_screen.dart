@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/expenses/domain/entities/expense_entity.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
@@ -62,7 +61,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: BlocBuilder<ExpenseBloc, ExpenseState>(
         builder: (context, state) {
           if (state is ExpenseLoading) {
@@ -93,14 +92,18 @@ class _TimelineScreenState extends State<TimelineScreen> {
                           height: 56,
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: AppColors.surfaceContainerLow,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerLow,
                             borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.search,
-                                color: AppColors.onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                               const SizedBox(width: 12),
                               Expanded(
@@ -111,9 +114,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                     hintText: isAr
                                         ? 'البحث عن المعاملات...'
                                         : 'Search transactions...',
+                                    fillColor: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainerLow,
                                     border: InputBorder.none,
-                                    hintStyle: const TextStyle(
-                                      color: AppColors.outline,
+                                    hintStyle: TextStyle(
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ),
@@ -136,13 +144,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                     selected: isSelected,
                                     onSelected: (v) =>
                                         setState(() => _filter = f),
-                                    backgroundColor:
-                                        AppColors.surfaceContainerHigh,
-                                    selectedColor: AppColors.secondaryContainer,
+                                    backgroundColor: Theme.of(
+                                      context,
+                                    ).colorScheme.surfaceContainerLowest,
+                                    selectedColor: Theme.of(
+                                      context,
+                                    ).colorScheme.secondaryContainer,
                                     labelStyle: TextStyle(
                                       color: isSelected
-                                          ? AppColors.onSecondaryContainer
-                                          : AppColors.onSurfaceVariant,
+                                          ? Theme.of(
+                                              context,
+                                            ).colorScheme.onSecondaryContainer
+                                          : Theme.of(
+                                              context,
+                                            ).colorScheme.onSurfaceVariant,
                                       fontWeight: isSelected
                                           ? FontWeight.bold
                                           : FontWeight.normal,
@@ -201,8 +216,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                   '${totalForDay >= 0 ? '+' : ''}\$${totalForDay.abs().toStringAsFixed(2)}',
                                   style: textTheme.labelLarge?.copyWith(
                                     color: totalForDay >= 0
-                                        ? AppColors.income
-                                        : AppColors.expense,
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.error,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -210,10 +225,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                             ),
                           ),
                           Container(
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLow,
-                              borderRadius: BorderRadius.circular(28),
-                            ),
                             child: Column(
                               children: group.value.map((expense) {
                                 return Dismissible(
@@ -225,12 +236,16 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                       horizontal: 20,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: AppColors.expense,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.error,
                                       borderRadius: BorderRadius.circular(28),
                                     ),
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.delete,
-                                      color: Colors.white,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onError,
                                     ),
                                   ),
                                   onDismissed: (_) {
