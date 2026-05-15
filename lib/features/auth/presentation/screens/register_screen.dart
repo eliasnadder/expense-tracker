@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
@@ -40,6 +39,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     TextEditingController? controller,
     String? Function(String?)? validator,
   }) {
+    final colors = Theme.of(context).colorScheme;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -48,7 +49,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            color: colors.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 8),
@@ -59,26 +60,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(
-              icon,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-              size: 20,
-            ),
+            prefixIcon: Icon(icon, color: colors.onSurfaceVariant, size: 20),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: Theme.of(
-              context,
-            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+            fillColor: colors.surfaceContainerLow,
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide(
-                color: Theme.of(context).colorScheme.primary,
-                width: 2,
-              ),
+              borderSide: BorderSide(color: colors.primary, width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -93,6 +85,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
@@ -102,12 +95,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
           Navigator.pushNamedAndRemoveUntil(context, '/auth', (route) => false);
         } else if (state is AuthError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.message), backgroundColor: Colors.red),
+            SnackBar(
+              content: Text(state.message),
+              backgroundColor: colors.error,
+            ),
           );
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.surface,
+        backgroundColor: colors.surface,
         body: Center(
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
@@ -115,38 +111,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppColors.surfaceContainerLowest,
+                color: colors.surfaceContainerLowest,
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.shadow.withValues(alpha: 0.05),
+                    color: colors.shadow.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
                 ],
                 border: Border.all(
-                  color: Theme.of(
-                    context,
-                  ).colorScheme.outlineVariant.withValues(alpha: 0.2),
+                  color: colors.outlineVariant.withValues(alpha: 0.2),
                 ),
               ),
               child: Form(
                 key: _formKey,
                 child: Column(
                   children: [
-                    // Header
                     Container(
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.primaryContainer,
+                        color: colors.primaryContainer,
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Icon(
                         Icons.app_registration,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: colors.onPrimaryContainer,
                         size: 28,
                       ),
                     ),
@@ -154,7 +145,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Text(
                       isAr ? 'إنشاء حساب' : 'Create Account',
                       style: textTheme.headlineSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
+                        color: colors.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -164,13 +155,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ? 'انضم إلى Financial Hub لإدارة ثروتك.'
                           : 'Join Financial Hub to manage your wealth.',
                       style: textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: colors.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
 
-                    // Fields
                     _buildField(
                       label: isAr ? 'الاسم الكامل' : 'Full Name',
                       hint: 'John Doe',
@@ -184,6 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+
                     _buildField(
                       label: isAr ? 'البريد الإلكتروني' : 'Email Address',
                       hint: 'example@mail.com',
@@ -206,6 +197,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
+
                     _buildField(
                       label: isAr ? 'كلمة المرور' : 'Password',
                       hint: '••••••••',
@@ -225,7 +217,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _obscurePassword
                               ? Icons.visibility_off
                               : Icons.visibility,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                          color: colors.onSurfaceVariant,
                         ),
                         onPressed: () => setState(
                           () => _obscurePassword = !_obscurePassword,
@@ -233,6 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
+
                     _buildField(
                       label: isAr ? 'تأكيد كلمة المرور' : 'Confirm Password',
                       hint: '••••••••',
@@ -250,14 +243,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Terms
                     Row(
                       children: [
                         Checkbox(
                           value: _agreeToTerms,
                           onChanged: (v) =>
                               setState(() => _agreeToTerms = v ?? false),
-                          activeColor: Theme.of(context).colorScheme.primary,
+                          activeColor: colors.primary,
                         ),
                         Expanded(
                           child: Text(
@@ -265,9 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ? 'أوافق على شروط الخدمة وسياسة الخصوصية.'
                                 : 'I agree to the Terms of Service and Privacy Policy.',
                             style: textTheme.bodySmall?.copyWith(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant,
+                              color: colors.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -275,7 +265,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Submit
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -298,15 +287,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                       ? 'يجب الموافقة على الشروط أولاً'
                                       : 'Accept the terms first',
                                 ),
+                                backgroundColor: colors.primary,
                               ),
                             );
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(
-                            context,
-                          ).colorScheme.primary,
-                          foregroundColor: Colors.white,
+                          backgroundColor: colors.primary,
+                          foregroundColor: colors.onPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
                           ),
@@ -314,7 +302,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           isAr ? 'إنشاء حساب' : 'Sign Up',
                           style: textTheme.labelLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.onPrimary,
+                            color: colors.onPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -322,7 +310,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     ),
                     const SizedBox(height: 24),
 
-                    // Footer
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -331,9 +318,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ? 'لديك حساب بالفعل؟'
                               : 'Already have an account?',
                           style: textTheme.bodySmall?.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
+                            color: colors.onSurfaceVariant,
                           ),
                         ),
                         TextButton(
@@ -341,7 +326,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Text(
                             isAr ? 'تسجيل الدخول' : 'Log In',
                             style: textTheme.labelLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: colors.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

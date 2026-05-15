@@ -1,6 +1,6 @@
+import 'package:expense_tracker/components/bars/search_bar.dart';
 import 'package:expense_tracker/features/expenses/domain/entities/expense_entity.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
-import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
 import 'package:expense_tracker/features/expenses/presentation/widgets/expense_card.dart';
 import 'package:flutter/material.dart';
@@ -88,46 +88,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     child: Column(
                       children: [
                         // Search Bar
-                        Container(
-                          height: 56,
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          decoration: BoxDecoration(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.search,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: TextField(
-                                  controller: _searchController,
-                                  onChanged: (_) => setState(() {}),
-                                  decoration: InputDecoration(
-                                    hintText: isAr
-                                        ? 'البحث عن المعاملات...'
-                                        : 'Search transactions...',
-                                    fillColor: Theme.of(
-                                      context,
-                                    ).colorScheme.surfaceContainerLow,
-                                    border: InputBorder.none,
-                                    hintStyle: TextStyle(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                        MySearchBar(
+                          controller: _searchController,
+                          onChanged: (_) => setState(() {}),
+                          hintText: isAr
+                              ? 'البحث عن المعاملات...'
+                              : 'Search transactions...',
                         ),
                         const SizedBox(height: 16),
                         // Filter Chips
@@ -149,7 +115,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                     ).colorScheme.surfaceContainerLowest,
                                     selectedColor: Theme.of(
                                       context,
-                                    ).colorScheme.secondaryContainer,
+                                    ).colorScheme.primaryContainer,
                                     labelStyle: TextStyle(
                                       color: isSelected
                                           ? Theme.of(
@@ -163,7 +129,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                           : FontWeight.normal,
                                     ),
                                     shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10),
+                                      borderRadius: BorderRadius.circular(20),
                                     ),
                                   ),
                                 );
@@ -192,15 +158,12 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     );
 
                     return SliverPadding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 8),
                       sliver: SliverList(
                         delegate: SliverChildListDelegate([
                           Padding(
                             padding: const EdgeInsets.symmetric(
-                              horizontal: 4,
+                              horizontal: 20,
                               vertical: 8,
                             ),
                             child: Row(
@@ -224,49 +187,34 @@ class _TimelineScreenState extends State<TimelineScreen> {
                               ],
                             ),
                           ),
-                          Container(
-                            child: Column(
-                              children: group.value.map((expense) {
-                                return Dismissible(
-                                  key: Key(expense.id),
-                                  direction: DismissDirection.endToStart,
-                                  background: Container(
-                                    alignment: Alignment.centerRight,
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 20,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.error,
-                                      borderRadius: BorderRadius.circular(28),
-                                    ),
-                                    child: Icon(
-                                      Icons.delete,
-                                      color: Theme.of(
-                                        context,
-                                      ).colorScheme.onError,
-                                    ),
-                                  ),
-                                  onDismissed: (_) {
-                                    context.read<ExpenseBloc>().add(
-                                      DeleteExpense(widget.userId, expense.id),
-                                    );
-                                  },
-                                  child: ExpenseCard(
-                                    expense: expense,
-                                    onDelete: () =>
-                                        context.read<ExpenseBloc>().add(
-                                          DeleteExpense(
-                                            widget.userId,
-                                            expense.id,
-                                          ),
-                                        ),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
+                          ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: group.value.length,
+                            itemBuilder: (context, index) {
+                              final expense = group.value[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14.0,
+                                  vertical: 4.0,
+                                ),
+                                child: ExpenseCard(
+                                  expense: expense,
+                                  userId: widget.userId,
+                                ),
+                              );
+                            },
                           ),
+                          // Container(
+                          //   child: Column(
+                          //     children: group.value.map((expense) {
+                          //       return ExpenseCard(
+                          //         expense: expense,
+                          //         userId: widget.userId,
+                          //       );
+                          //     }).toList(),
+                          //   ),
+                          // ),
                         ]),
                       ),
                     );

@@ -15,11 +15,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colors = theme.colorScheme;
     final textTheme = theme.textTheme;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: colors.surface,
       body: Stack(
         children: [
           PageView(
@@ -55,7 +56,6 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ],
           ),
-          // Bottom Controls
           Positioned(
             bottom: 0,
             left: 0,
@@ -67,15 +67,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Theme.of(context).colorScheme.surface.withValues(alpha: 0),
-                    Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
-                    Theme.of(context).colorScheme.surface,
+                    colors.surface.withValues(alpha: 0),
+                    colors.surface.withValues(alpha: 0.8),
+                    colors.surface,
                   ],
                 ),
               ),
               child: Column(
                 children: [
-                  // Page Indicators
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: List.generate(3, (index) {
@@ -87,15 +86,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         height: 8,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.surfaceVariant,
+                              ? colors.primary
+                              : colors.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       );
                     }),
                   ),
                   const SizedBox(height: 32),
-                  // Buttons
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -105,7 +103,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Text(
                           isAr ? 'تخطي' : 'Skip',
                           style: textTheme.labelLarge?.copyWith(
-                            color: Theme.of(context).colorScheme.primary,
+                            color: colors.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -122,8 +120,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Theme.of(context).colorScheme.primary,
-                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                          backgroundColor: colors.primary,
+                          foregroundColor: colors.onPrimary,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32,
                             vertical: 16,
@@ -170,14 +168,15 @@ class _OnboardingPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(24),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Illustration area
           SizedBox(
             width: 260,
             height: 260,
@@ -188,7 +187,7 @@ class _OnboardingPage extends StatelessWidget {
                   width: 200,
                   height: 200,
                   decoration: BoxDecoration(
-                    color: AppColors.primaryContainer.withValues(alpha: 0.1),
+                    color: colors.primaryContainer.withValues(alpha: 0.18),
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -198,11 +197,11 @@ class _OnboardingPage extends StatelessWidget {
                     width: 180,
                     height: 180,
                     decoration: BoxDecoration(
-                      color: AppColors.primaryContainer,
+                      color: colors.primaryContainer,
                       borderRadius: BorderRadius.circular(40),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.2),
+                          color: colors.primary.withValues(alpha: 0.2),
                           blurRadius: 20,
                           offset: const Offset(0, 10),
                         ),
@@ -214,28 +213,27 @@ class _OnboardingPage extends StatelessWidget {
                         child: Icon(
                           icon,
                           size: 80,
-                          color: AppColors.onPrimaryContainer,
+                          color: colors.onPrimaryContainer,
                         ),
                       ),
                     ),
                   ),
                 ),
-                // Decorative secondary icons
                 Positioned(
                   top: 20,
                   right: 20,
                   child: Container(
                     padding: const EdgeInsets.all(12),
-                    decoration: const BoxDecoration(
-                      color: AppColors.secondaryContainer,
+                    decoration: BoxDecoration(
+                      color: colors.secondaryContainer,
                       shape: BoxShape.circle,
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(color: Colors.black12, blurRadius: 10),
                       ],
                     ),
                     child: Icon(
                       secondaryIcon1,
-                      color: AppColors.onSecondaryContainer,
+                      color: colors.onSecondaryContainer,
                       size: 24,
                     ),
                   ),
@@ -248,15 +246,15 @@ class _OnboardingPage extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.tertiaryContainer,
+                        color: colors.tertiaryContainer,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(color: Colors.black12, blurRadius: 10),
                         ],
                       ),
                       child: Icon(
                         secondaryIcon2,
-                        color: AppColors.onTertiaryContainer,
+                        color: colors.onTertiaryContainer,
                         size: 28,
                       ),
                     ),
@@ -270,7 +268,7 @@ class _OnboardingPage extends StatelessWidget {
             title,
             style: textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: AppColors.primary,
+              color: colors.primary,
             ),
             textAlign: TextAlign.center,
           ),
@@ -280,13 +278,13 @@ class _OnboardingPage extends StatelessWidget {
             child: Text(
               description,
               style: textTheme.bodyLarge?.copyWith(
-                color: AppColors.onSurfaceVariant,
+                color: colors.onSurfaceVariant,
                 height: 1.5,
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          const SizedBox(height: 100), // Space for bottom controls
+          const SizedBox(height: 100),
         ],
       ),
     );

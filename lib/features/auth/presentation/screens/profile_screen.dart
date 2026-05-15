@@ -63,7 +63,7 @@ class ProfileScreen extends StatelessWidget {
                           label: isAr ? 'مصروف الشهر' : 'Spent',
                           value: _money(monthlySpent),
                           icon: Icons.arrow_downward,
-                          color: AppColors.expense,
+                          color: Theme.of(context).colorScheme.error,
                         ),
                       ),
                     ],
@@ -337,17 +337,6 @@ class _ActionPanel extends StatelessWidget {
           ),
           trailing: const Icon(Icons.chevron_right),
           onTap: onSettings,
-        ),
-        ListTile(
-          leading: Icon(
-            Icons.logout,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          title: Text(
-            isAr ? 'تسجيل الخروج' : 'Sign out',
-            style: TextStyle(color: Theme.of(context).colorScheme.error),
-          ),
-          onTap: onSignOut,
         ),
       ],
     );

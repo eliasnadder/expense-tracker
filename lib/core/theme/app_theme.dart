@@ -136,7 +136,7 @@ class _DarkColors {
   static const outlineVariant = Color(0xFF464455);
 
   static const income = Color(0xFF4DDAE8);
-  static const expense = Color(0xFFFFB4AB);
+  static const expense = Color(0xFF93000A);
   static const expenseContainer = Color(0xFF93000A);
 }
 
@@ -328,7 +328,7 @@ class AppTheme {
       tertiaryContainer: const Color(0xFF004E5C),
       onTertiaryContainer: const Color(0xFF97F0FF),
       error: _DarkColors.expense,
-      onError: const Color(0xFF690005),
+      onError: _DarkColors.expense,
       errorContainer: _DarkColors.expenseContainer,
       onErrorContainer: const Color(0xFFFFDAD6),
       surface: _DarkColors.surface,
@@ -337,7 +337,7 @@ class AppTheme {
       surfaceContainerLow: _DarkColors.surfaceLow,
       surfaceContainer: _DarkColors.surfaceContainer,
       surfaceContainerHigh: _DarkColors.surfaceHigh,
-      surfaceContainerHighest: _DarkColors.surfaceHighest,
+      surfaceContainerHighest: AppColors.surfaceContainerHighest,
       onSurfaceVariant: _DarkColors.onSurfaceVariant,
       outline: _DarkColors.outline,
       outlineVariant: _DarkColors.outlineVariant,

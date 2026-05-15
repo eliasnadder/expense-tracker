@@ -56,7 +56,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       userId: widget.userId,
       amount: amount,
       category: _selectedCategory.name,
-      description: _descriptionController.text.trim(),
+      description: _descriptionController.text.trim() == ''
+          ? _selectedCategory.name
+          : _descriptionController.text.trim(),
       date: _selectedDate,
       emoji: _selectedCategory.emoji,
       type: _selectedType,
@@ -75,6 +77,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
+        backgroundColor: theme.colorScheme.surface,
+        elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close),
           onPressed: () => Navigator.pop(context),
@@ -116,7 +120,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: _selectedType == 'expense'
-                                    ? theme.colorScheme.error
+                                    ? theme.colorScheme.errorContainer
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(100),
                               ),
@@ -143,7 +147,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: _selectedType == 'income'
-                                    ? theme.colorScheme.primary
+                                    ? theme.colorScheme.primaryContainer
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(100),
                               ),
@@ -170,17 +174,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       horizontal: 12,
                       vertical: 4,
                     ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primaryContainer.withValues(
-                        alpha: 0.1,
-                      ),
-                      borderRadius: BorderRadius.circular(100),
-                    ),
                     child: Text(
                       isAr ? 'المبلغ' : 'Amount',
                       style: textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
+                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -301,50 +299,50 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   GestureDetector(
                     onTap: _pickDate,
                     child: Container(
+                      height: 70,
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
+                        horizontal: 24,
                         vertical: 12,
                       ),
                       decoration: BoxDecoration(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerLow,
-                        borderRadius: BorderRadius.vertical(
-                          top: Radius.circular(12),
-                        ),
-                        border: Border(
-                          bottom: BorderSide(
-                            color: Theme.of(context).colorScheme.outlineVariant,
-                            width: 2,
-                          ),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            isAr ? 'التاريخ' : 'Date',
-                            style: textTheme.labelMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                        color: theme.colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(100),
+                        boxShadow: [
+                          BoxShadow(
+                            color: theme.colorScheme.shadow.withValues(
+                              alpha: 0.05,
                             ),
+                            blurRadius: 15,
+                            offset: const Offset(0, 4),
                           ),
-                          const SizedBox(height: 4),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
+                              Text(
+                                isAr ? 'التاريخ' : 'Date',
+                                style: textTheme.labelMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
                               Text(
                                 DateFormat(
                                   'EEEE, MMM dd, yyyy',
                                 ).format(_selectedDate),
                                 style: textTheme.bodyLarge,
                               ),
-                              Icon(
-                                Icons.calendar_month,
-                                color: Theme.of(
-                                  context,
-                                ).colorScheme.onSurfaceVariant,
-                              ),
                             ],
+                          ),
+                          Icon(
+                            Icons.calendar_month,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ],
                       ),
@@ -354,27 +352,29 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
                   // Description Input
                   Container(
+                    height: 150,
                     padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
+                      horizontal: 24,
                       vertical: 12,
                     ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(12),
-                      ),
-                      border: Border(
-                        bottom: BorderSide(
-                          color: Theme.of(context).colorScheme.outlineVariant,
-                          width: 2,
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(30),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.shadow.withValues(
+                            alpha: 0.05,
+                          ),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
                         ),
-                      ),
+                      ],
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          isAr ? 'ملاحظات' : 'Notes',
+                          isAr ? 'ملاحظات' : 'Description',
                           style: textTheme.labelMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -388,11 +388,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             hintStyle: TextStyle(
                               color: Theme.of(
                                 context,
-                              ).colorScheme.outlineVariant,
+                              ).colorScheme.onSurfaceVariant.withAlpha(150),
                             ),
-                            fillColor: Theme.of(
-                              context,
-                            ).colorScheme.surfaceContainerLow,
+                            fillColor: Colors.transparent,
                             enabledBorder: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -405,15 +403,23 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
 
                   // Recurring Toggle
                   Container(
-                    padding: const EdgeInsets.all(16),
+                    height: 80,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 17,
+                    ),
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surfaceContainerLow,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Theme.of(
-                          context,
-                        ).colorScheme.outlineVariant.withValues(alpha: 0.1),
-                      ),
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      borderRadius: BorderRadius.circular(100),
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.shadow.withValues(
+                            alpha: 0.05,
+                          ),
+                          blurRadius: 15,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
                     ),
                     child: Row(
                       children: [
@@ -479,7 +485,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       width: double.infinity,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surfaceContainerLow
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surfaceContainerHigh
                             .withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(16),
                       ),
@@ -543,8 +551,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
               child: ElevatedButton(
                 onPressed: _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.primary,
-                  foregroundColor: Colors.white,
+                  backgroundColor: theme.colorScheme.primaryContainer,
                   minimumSize: const Size(double.infinity, 56),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
@@ -567,9 +574,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           : (_selectedType == 'income'
                                 ? 'Save Income'
                                 : 'Save Expense'),
-                      style: const TextStyle(
-                        fontSize: 18,
+                      style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontSize: 20,
                       ),
                     ),
                   ],

@@ -1,3 +1,4 @@
+import 'package:expense_tracker/components/bars/search_bar.dart';
 import 'package:expense_tracker/core/constants/expense_categories.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
@@ -21,13 +22,13 @@ class CategoriesScreen extends StatelessWidget {
         title: Text(
           isAr ? 'الفئات' : 'Categories',
           style: textTheme.titleLarge?.copyWith(
-            fontWeight: FontWeight.bold,
-            color: theme.colorScheme.primary,
+            fontSize: 22,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -50,42 +51,8 @@ class CategoriesScreen extends StatelessWidget {
             const SizedBox(height: 24),
 
             // Search Bar
-            Container(
-              height: 56,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerLow,
-                borderRadius: BorderRadius.circular(100),
-                boxShadow: [
-                  BoxShadow(
-                    color: theme.colorScheme.shadow.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.search, color: theme.colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: TextField(
-                      decoration: InputDecoration(
-                        hintText: isAr
-                            ? 'البحث عن الفئات...'
-                            : 'Search categories...',
-                        fillColor: Theme.of(
-                          context,
-                        ).colorScheme.surfaceContainerLow,
-                        border: InputBorder.none,
-                        hintStyle: textTheme.bodyLarge?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+            MySearchBar(
+              hintText: isAr ? 'البحث عن الفئات...' : 'Search categories...',
             ),
             const SizedBox(height: 32),
 
@@ -145,7 +112,6 @@ class CategoriesScreen extends StatelessWidget {
         },
         backgroundColor: theme.colorScheme.primaryContainer,
         foregroundColor: theme.colorScheme.onPrimaryContainer,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: const Icon(Icons.add),
       ),
     );
@@ -179,12 +145,12 @@ class _CategoryBentoCard extends StatelessWidget {
         border: Border.all(
           color: Theme.of(
             context,
-          ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         ),
         boxShadow: [
           BoxShadow(
             color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
-            blurRadius: 10,
+            blurRadius: 15,
             offset: const Offset(0, 4),
           ),
         ],

@@ -7,12 +7,10 @@ import 'package:expense_tracker/features/ai_insight/presentation/bloc/ai_bloc.da
 import 'package:expense_tracker/features/analytics/presentation/screens/analytics_screen.dart';
 import 'package:expense_tracker/features/auth/domain/entities/user_entity.dart';
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_bloc.dart';
-import 'package:expense_tracker/features/budget/presentation/bloc/budget_event.dart';
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_state.dart';
 import 'package:expense_tracker/features/budget/presentation/widgets/budget_card.dart';
 import 'package:expense_tracker/features/expenses/domain/entities/expense_entity.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
-import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
 import 'package:expense_tracker/features/expenses/presentation/screens/add_expense_screen.dart';
 import 'package:expense_tracker/features/expenses/presentation/widgets/expense_card.dart';
@@ -22,7 +20,6 @@ import 'package:expense_tracker/features/auth/presentation/screens/profile_scree
 import 'package:expense_tracker/features/expenses/presentation/screens/categories_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
 class HomeScreen extends StatelessWidget {
   final UserEntity user;
@@ -45,59 +42,8 @@ class _HomeBody extends StatefulWidget {
 class _HomeBodyState extends State<_HomeBody> {
   String _selectedCategory = 'All';
 
-  Future<void> _showSetBudgetDialog(
-    BuildContext context,
-    bool isAr,
-    double currentBudget,
-  ) async {
-    final controller = TextEditingController(
-      text: currentBudget > 0 ? currentBudget.toStringAsFixed(0) : '',
-    );
-    await showDialog<void>(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(isAr ? 'تحديد الميزانية' : 'Set Budget'),
-        content: TextField(
-          controller: controller,
-          keyboardType: const TextInputType.numberWithOptions(decimal: true),
-          decoration: InputDecoration(
-            labelText: isAr ? 'المبلغ الشهري' : 'Monthly Amount',
-            prefixText: '\$ ',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: Text(isAr ? 'إلغاء' : 'Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final amount = double.tryParse(controller.text.trim());
-              if (amount != null && amount > 0) {
-                final now = DateTime.now();
-                context.read<BudgetBloc>().add(
-                  SetBudget(
-                    userId: widget.user.id,
-                    category: 'Total',
-                    amount: amount,
-                    month: now.month,
-                    year: now.year,
-                  ),
-                );
-                Navigator.pop(dialogContext);
-              }
-            },
-            child: Text(isAr ? 'حفظ' : 'Save'),
-          ),
-        ],
-      ),
-    );
-    controller.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return BlocBuilder<ExpenseBloc, ExpenseState>(
@@ -115,19 +61,32 @@ class _HomeBodyState extends State<_HomeBody> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (expenseState is ExpenseLoaded)
-                _SummaryCard(
-                  total: expenseState.totalThisMonth,
-                  name: widget.user.displayName,
-                  isAr: isAr,
-                  theme: theme,
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
+                  child: Text(
+                    'Monthly Budget',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
                 ),
 
+              BlocBuilder<BudgetBloc, BudgetState>(
+                builder: (context, budgetState) {
+                  final totalLimit = budgetState is BudgetLoaded
+                      ? budgetState.monthlyBudgetLimit
+                      : 0.0;
+                  return BudgetCard(
+                    budget: totalLimit,
+                    spent: spent,
+                    isAr: isAr,
+                    userId: widget.user.id,
+                    isBudgetScreen: false,
+                  );
+                },
+              ),
+              SizedBox(height: 16),
               // Category Chips
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 18),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -156,89 +115,55 @@ class _HomeBodyState extends State<_HomeBody> {
                 onSelected: (category) =>
                     setState(() => _selectedCategory = category),
               ),
-
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Text(
-                  'Monthly Budget',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-
-              BlocBuilder<BudgetBloc, BudgetState>(
-                builder: (context, budgetState) {
-                  final totalLimit = budgetState is BudgetLoaded
-                      ? budgetState.monthlyBudgetLimit
-                      : 0.0;
-                  return BudgetCard(
-                    budget: totalLimit,
-                    spent: spent,
-                    isAr: isAr,
-                    onSetBudget: () =>
-                        _showSetBudgetDialog(context, isAr, totalLimit),
-                  );
-                },
-              ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 16,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isAr ? 'المعاملات الأخيرة' : 'Recent Transactions',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _NavShellState.of(context)?.goToTab(1);
-                      },
-                      child: Text(isAr ? 'رؤية الكل' : 'See All'),
-                    ),
-                  ],
-                ),
-              ),
+              SizedBox(height: 16),
 
               if (expenseState is ExpenseLoading)
                 const Center(child: CircularProgressIndicator())
-              else if (expenseState is ExpenseLoaded && recentExpenses.isEmpty)
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(40.0),
-                    child: Text(
-                      isAr
-                          ? (_selectedCategory == 'All'
-                                ? 'لا توجد معاملات بعد'
-                                : 'لا توجد معاملات لهذه الفئة')
-                          : (_selectedCategory == 'All'
-                                ? 'No transactions yet'
-                                : 'No transactions for this category'),
-                      style: theme.textTheme.bodyLarge,
-                    ),
-                  ),
-                )
-              else if (expenseState is ExpenseLoaded)
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.only(bottom: 100),
-                  itemCount: recentExpenses.length,
-                  itemBuilder: (context, index) {
-                    final expense = recentExpenses[index];
-                    return ExpenseCard(
-                      expense: expense,
-                      onDelete: () => context.read<ExpenseBloc>().add(
-                        DeleteExpense(widget.user.id, expense.id),
+              else if (expenseState is ExpenseLoaded &&
+                  recentExpenses.isNotEmpty)
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            isAr ? 'المعاملات الأخيرة' : 'Recent Transactions',
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              _NavShellState.of(context)?.goToTab(1);
+                            },
+                            child: Text(isAr ? 'رؤية الكل' : 'See All'),
+                          ),
+                        ],
                       ),
-                    );
-                  },
+                    ),
+                  ],
                 ),
+              ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: recentExpenses.length,
+                itemBuilder: (context, index) {
+                  final expense = recentExpenses[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 14.0,
+                      vertical: 4.0,
+                    ),
+                    child: ExpenseCard(
+                      expense: expense,
+                      userId: widget.user.id,
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         );
@@ -284,7 +209,7 @@ class _CategorySection extends StatelessWidget {
 
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: categories.map((cat) {
           final id = cat['id'] as String;
@@ -299,7 +224,7 @@ class _CategorySection extends StatelessWidget {
               backgroundColor: Theme.of(
                 context,
               ).colorScheme.surfaceContainerLowest,
-              selectedColor: Theme.of(context).colorScheme.secondaryContainer,
+              selectedColor: Theme.of(context).colorScheme.primaryContainer,
               labelStyle: TextStyle(
                 color: isSelected
                     ? Theme.of(context).colorScheme.onSecondaryContainer
@@ -307,7 +232,7 @@ class _CategorySection extends StatelessWidget {
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: BorderRadius.circular(20),
               ),
             ),
           );
@@ -344,7 +269,7 @@ class _NavShellState extends State<_NavShell> {
     final screens = [
       _HomeBody(user: widget.user),
       TimelineScreen(userId: widget.user.id),
-      const BudgetsScreen(),
+      BudgetsScreen(userId: widget.user.id),
       BlocProvider(
         create: (_) => getIt<AiBloc>(),
         child: const AnalyticsScreen(),
@@ -353,13 +278,38 @@ class _NavShellState extends State<_NavShell> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          isAr ? 'المحفظة الذكية' : 'Financial Hub',
-          style: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: AppColors.primary,
-          ),
-        ),
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        title: screens[_currentIndex] is _HomeBody
+            ? Text(
+                isAr ? 'الرئيسية' : 'Home',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 28,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              )
+            : screens[_currentIndex] is TimelineScreen
+            ? Text(
+                isAr ? 'الخط الزمني' : 'Timeline',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 28,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              )
+            : screens[_currentIndex] is BudgetsScreen
+            ? Text(
+                isAr ? 'الميزانيات' : 'Budgets',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 28,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              )
+            : Text(
+                isAr ? 'التحليلات' : 'Analytics',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontSize: 28,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+              ),
         actions: [
           GestureDetector(
             onTap: () => Navigator.push(
@@ -391,6 +341,7 @@ class _NavShellState extends State<_NavShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        indicatorColor: Theme.of(context).colorScheme.primaryContainer,
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.dashboard_outlined),
@@ -425,84 +376,6 @@ class _NavShellState extends State<_NavShell> {
               child: const Icon(Icons.add, size: 32),
             )
           : null,
-    );
-  }
-}
-
-class _SummaryCard extends StatelessWidget {
-  final double total;
-  final String name;
-  final bool isAr;
-  final ThemeData theme;
-
-  const _SummaryCard({
-    required this.total,
-    required this.name,
-    required this.isAr,
-    required this.theme,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(24),
-      width: double.infinity,
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.primaryContainer,
-        borderRadius: BorderRadius.circular(28),
-        border: Border.all(
-          color: Theme.of(
-            context,
-          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
-        ),
-      ),
-      child: Stack(
-        children: [
-          Positioned(
-            top: -20,
-            right: -20,
-            child: Container(
-              width: 120,
-              height: 120,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                shape: BoxShape.circle,
-              ),
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isAr ? 'إجمالي الرصيد' : 'Total Balance',
-                style: theme.textTheme.titleMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-              if (name.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  isAr ? 'مرحباً، $name' : 'Hi, $name',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-              const SizedBox(height: 8),
-              Text(
-                '\$${NumberFormat('#,##0.00').format(total)}',
-                style: theme.textTheme.displayLarge?.copyWith(
-                  fontSize: 42,
-                  fontWeight: FontWeight.bold,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

@@ -45,17 +45,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          final user = state is AuthAuthenticated ? state.user : null;
+          // final user = state is AuthAuthenticated ? state.user : null;
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
             children: [
-              _AccountHeader(
-                name: user?.displayName ?? (isAr ? 'مستخدم' : 'User'),
-                email: user?.email ?? '',
-                photoUrl: user?.photoUrl,
-              ),
-              const SizedBox(height: 20),
-
               // ── Preferences ───────────────────────────────────────────────
               _SettingsSection(
                 title: isAr ? 'التفضيلات' : 'Preferences',
@@ -216,75 +209,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (selected != null) onChanged(selected);
-  }
-}
-
-// ─── Reusable sub-widgets ─────────────────────────────────────────────────────
-
-class _AccountHeader extends StatelessWidget {
-  final String name;
-  final String email;
-  final String? photoUrl;
-
-  const _AccountHeader({
-    required this.name,
-    required this.email,
-    this.photoUrl,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
-
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.3)),
-      ),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 28,
-            backgroundColor: cs.primaryContainer,
-            backgroundImage: photoUrl != null ? NetworkImage(photoUrl!) : null,
-            child: photoUrl == null
-                ? Text(
-                    name.isNotEmpty ? name.characters.first.toUpperCase() : 'U',
-                    style: textTheme.titleLarge?.copyWith(
-                      color: cs.onPrimaryContainer,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : null,
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                Text(
-                  email,
-                  style: textTheme.bodyMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }
 

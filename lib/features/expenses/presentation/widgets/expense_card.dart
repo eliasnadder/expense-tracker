@@ -1,113 +1,240 @@
 import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/expenses/domain/entities/expense_entity.dart';
+import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
+import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseCard extends StatelessWidget {
   final ExpenseEntity expense;
-  final VoidCallback onDelete;
+  final String userId;
 
-  const ExpenseCard({super.key, required this.expense, required this.onDelete});
+  const ExpenseCard({super.key, required this.expense, required this.userId});
+
+  Future<bool> _confirmDelete(BuildContext context) async {
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+    final theme = Theme.of(context);
+
+    final shouldDelete = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: theme.colorScheme.surfaceContainerHigh,
+          surfaceTintColor: Colors.transparent,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(32),
+          ),
+          contentPadding: const EdgeInsets.fromLTRB(24, 24, 24, 20),
+          actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+
+          title: Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.errorContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.delete_outline_rounded,
+                  color: theme.colorScheme.onErrorContainer,
+                  size: 26,
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
+              Expanded(
+                child: Text(
+                  isAr ? 'حذف العملية؟' : 'Delete Transaction?',
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          content: Text(
+            isAr
+                ? 'هل أنت متأكد من حذف هذه العملية؟ لا يمكن التراجع عن هذا الإجراء.'
+                : 'Are you sure you want to delete this transaction? This action cannot be undone.',
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+              height: 1.5,
+            ),
+          ),
+
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(false);
+              },
+              style: TextButton.styleFrom(
+                foregroundColor: theme.colorScheme.onSurfaceVariant,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 18,
+                  vertical: 14,
+                ),
+              ),
+              child: Text(isAr ? 'إلغاء' : 'Cancel'),
+            ),
+
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.of(dialogContext).pop(true);
+              },
+              icon: const Icon(Icons.delete_rounded, size: 18),
+              label: Text(isAr ? 'حذف' : 'Delete'),
+              style: FilledButton.styleFrom(
+                backgroundColor: theme.colorScheme.error,
+                foregroundColor: theme.colorScheme.onError,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 14,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(100),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (shouldDelete == true && context.mounted) {
+      context.read<ExpenseBloc>().add(DeleteExpense(userId, expense.id));
+    }
+
+    return shouldDelete ?? false;
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final textTheme = theme.textTheme;
+    final colors = theme.colorScheme;
+    final amountColor = expense.isIncome
+        ? AppColors.income
+        : theme.colorScheme.onSurface;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.surfaceContainerLowest,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: Theme.of(
-            context,
-          ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+      child: Dismissible(
+        key: Key(expense.id),
+        direction: DismissDirection.endToStart,
+
+        confirmDismiss: (_) => _confirmDelete(context),
+
+        background: Container(
+          alignment: Alignment.centerRight,
+          padding: const EdgeInsets.symmetric(horizontal: 28),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.errorContainer,
+            borderRadius: BorderRadius.circular(32),
+          ),
+          child: Icon(
+            Icons.delete_rounded,
+            color: theme.colorScheme.onErrorContainer,
+            size: 28,
+          ),
         ),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: _getCategoryColor(
-                expense.category,
-              ).withValues(alpha: 0.15),
-              shape: BoxShape.circle,
-            ),
-            child: Center(
-              child: Text(
-                expense.emoji ?? '📦',
-                style: const TextStyle(fontSize: 24),
-              ),
+
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: colors.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(
+              color: colors.outlineVariant.withValues(alpha: 0.28),
             ),
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  expense.description,
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  '${expense.category} • ${DateFormat('MMM dd, h:mm a').format(expense.date)}',
-                  style: textTheme.labelMedium?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+
+          child: Row(
             children: [
+              Container(
+                width: 56,
+                height: 56,
+                decoration: BoxDecoration(
+                  color: _getCategoryColor(
+                    context,
+                    expense.category,
+                  ).withValues(alpha: 0.14),
+                  shape: BoxShape.circle,
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  expense.emoji ?? '📦',
+                  style: const TextStyle(fontSize: 26),
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      expense.description,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: colors.onSurface,
+                      ),
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    Text(
+                      '${expense.category} • ${DateFormat('MMM dd, h:mm a').format(expense.date)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.labelMedium?.copyWith(
+                        color: colors.onSurfaceVariant,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(width: 16),
+
               Text(
                 '${expense.isIncome ? '+' : '-'}\$${expense.amount.toStringAsFixed(2)}',
                 style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: expense.isIncome
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.onSurface,
+                  fontWeight: FontWeight.w800,
+                  color: amountColor,
                 ),
-              ),
-              IconButton(
-                padding: EdgeInsets.zero,
-                constraints: const BoxConstraints(),
-                icon: Icon(
-                  Icons.delete_outline,
-                  color: Theme.of(context).colorScheme.error,
-                  size: 18,
-                ),
-                onPressed: onDelete,
               ),
             ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Color _getCategoryColor(String category) {
+  Color _getCategoryColor(BuildContext context, String category) {
     switch (category.toLowerCase()) {
       case 'food':
         return AppColors.expense;
+
       case 'transport':
         return AppColors.secondary;
+
       case 'shopping':
         return AppColors.primary;
+
       case 'salary':
       case 'gift':
       case 'investment':
         return AppColors.income;
+
       default:
         return AppColors.outline;
     }
