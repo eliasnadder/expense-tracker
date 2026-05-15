@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -45,7 +44,7 @@ class _SplashScreenState extends State<SplashScreen>
     final textTheme = theme.textTheme;
 
     return Scaffold(
-      backgroundColor: AppColors.surfaceContainerLow,
+      backgroundColor: theme.colorScheme.surfaceContainerLow,
       body: SafeArea(
         child: Column(
           children: [
@@ -61,7 +60,9 @@ class _SplashScreenState extends State<SplashScreen>
                       borderRadius: BorderRadius.circular(32),
                       boxShadow: [
                         BoxShadow(
-                          color: AppColors.primary.withValues(alpha: 0.22),
+                          color: theme.colorScheme.primary.withValues(
+                            alpha: 0.22,
+                          ),
                           blurRadius: 32,
                           offset: const Offset(0, 14),
                         ),
@@ -77,7 +78,7 @@ class _SplashScreenState extends State<SplashScreen>
                   Text(
                     'Financial Hub',
                     style: textTheme.headlineMedium?.copyWith(
-                      color: AppColors.primary,
+                      color: theme.colorScheme.primary,
                       fontWeight: FontWeight.bold,
                       letterSpacing: -0.5,
                     ),
@@ -94,7 +95,9 @@ class _SplashScreenState extends State<SplashScreen>
                   Text(
                     'INITIALIZING',
                     style: textTheme.labelMedium?.copyWith(
-                      color: AppColors.outline,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.6,
+                      ),
                       letterSpacing: 4,
                       fontWeight: FontWeight.bold,
                     ),
@@ -104,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
                     width: 192,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceVariant,
+                      color: theme.colorScheme.surfaceVariant,
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: FractionallySizedBox(
@@ -112,7 +115,7 @@ class _SplashScreenState extends State<SplashScreen>
                       widthFactor: _progressAnimation.value,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: theme.colorScheme.primary,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       ),

@@ -1,5 +1,4 @@
 import 'package:expense_tracker/core/constants/expense_categories.dart';
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/expenses/data/models/expense_model.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
@@ -74,7 +73,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
         leading: IconButton(
           icon: const Icon(Icons.close),
@@ -101,9 +100,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     margin: const EdgeInsets.only(bottom: 24),
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerHighest.withValues(
-                        alpha: 0.5,
-                      ),
+                      color: theme.colorScheme.surfaceContainerHighest
+                          .withValues(alpha: 0.5),
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Row(
@@ -118,7 +116,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: _selectedType == 'expense'
-                                    ? AppColors.expense
+                                    ? theme.colorScheme.error
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(100),
                               ),
@@ -128,7 +126,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 style: TextStyle(
                                   color: _selectedType == 'expense'
                                       ? Colors.white
-                                      : AppColors.onSurfaceVariant,
+                                      : theme.colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -145,7 +143,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               padding: const EdgeInsets.symmetric(vertical: 12),
                               decoration: BoxDecoration(
                                 color: _selectedType == 'income'
-                                    ? AppColors.income
+                                    ? theme.colorScheme.primary
                                     : Colors.transparent,
                                 borderRadius: BorderRadius.circular(100),
                               ),
@@ -155,7 +153,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 style: TextStyle(
                                   color: _selectedType == 'income'
                                       ? Colors.white
-                                      : AppColors.onSurfaceVariant,
+                                      : theme.colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -173,13 +171,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColors.primaryContainer.withValues(alpha: 0.1),
+                      color: theme.colorScheme.primaryContainer.withValues(
+                        alpha: 0.1,
+                      ),
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: Text(
                       isAr ? 'المبلغ' : 'Amount',
                       style: textTheme.labelMedium?.copyWith(
-                        color: AppColors.primary,
+                        color: theme.colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -193,7 +193,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         '\$',
                         style: textTheme.headlineLarge?.copyWith(
                           fontSize: 32,
-                          color: AppColors.onSurfaceVariant,
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(width: 4),
@@ -207,14 +207,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           style: textTheme.displayLarge?.copyWith(
                             fontSize: 56,
                             fontWeight: FontWeight.normal,
-                            color: AppColors.onSurface,
+                            color: theme.colorScheme.onSurface,
                           ),
-                          decoration: const InputDecoration(
-                            border: InputBorder.none,
+                          decoration: InputDecoration(
                             contentPadding: EdgeInsets.zero,
+                            enabledBorder: InputBorder.none,
+                            fillColor: Colors.transparent,
                             hintText: '0.00',
                             hintStyle: TextStyle(
-                              color: AppColors.outlineVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.outlineVariant,
                             ),
                           ),
                           validator: (v) {
@@ -258,12 +261,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         child: Container(
                           decoration: BoxDecoration(
                             color: isSelected
-                                ? AppColors.primaryContainer
-                                : AppColors.surfaceContainerLow,
+                                ? theme.colorScheme.primaryContainer
+                                : theme.colorScheme.surfaceContainerLow,
                             borderRadius: BorderRadius.circular(16),
                             border: Border.all(
                               color: isSelected
-                                  ? AppColors.primary
+                                  ? theme.colorScheme.primary
                                   : Colors.transparent,
                             ),
                           ),
@@ -279,8 +282,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 isAr ? cat.nameAr : cat.name,
                                 style: textTheme.labelSmall?.copyWith(
                                   color: isSelected
-                                      ? AppColors.onPrimaryContainer
-                                      : AppColors.onSurfaceVariant,
+                                      ? theme.colorScheme.onPrimaryContainer
+                                      : theme.colorScheme.onSurfaceVariant,
                                   fontWeight: isSelected
                                       ? FontWeight.bold
                                       : FontWeight.normal,
@@ -302,14 +305,16 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         horizontal: 16,
                         vertical: 12,
                       ),
-                      decoration: const BoxDecoration(
-                        color: AppColors.surfaceContainerLow,
+                      decoration: BoxDecoration(
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerLow,
                         borderRadius: BorderRadius.vertical(
                           top: Radius.circular(12),
                         ),
                         border: Border(
                           bottom: BorderSide(
-                            color: AppColors.outlineVariant,
+                            color: Theme.of(context).colorScheme.outlineVariant,
                             width: 2,
                           ),
                         ),
@@ -320,7 +325,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           Text(
                             isAr ? 'التاريخ' : 'Date',
                             style: textTheme.labelMedium?.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(height: 4),
@@ -333,9 +338,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 ).format(_selectedDate),
                                 style: textTheme.bodyLarge,
                               ),
-                              const Icon(
+                              Icon(
                                 Icons.calendar_month,
-                                color: AppColors.onSurfaceVariant,
+                                color: Theme.of(
+                                  context,
+                                ).colorScheme.onSurfaceVariant,
                               ),
                             ],
                           ),
@@ -351,14 +358,14 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       horizontal: 16,
                       vertical: 12,
                     ),
-                    decoration: const BoxDecoration(
-                      color: AppColors.surfaceContainerLow,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
                       borderRadius: BorderRadius.vertical(
                         top: Radius.circular(12),
                       ),
                       border: Border(
                         bottom: BorderSide(
-                          color: AppColors.outlineVariant,
+                          color: Theme.of(context).colorScheme.outlineVariant,
                           width: 2,
                         ),
                       ),
@@ -369,7 +376,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                         Text(
                           isAr ? 'ملاحظات' : 'Notes',
                           style: textTheme.labelMedium?.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -378,10 +385,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           maxLines: 2,
                           decoration: InputDecoration(
                             hintText: isAr ? 'أضف تفاصيل...' : 'Add details...',
-                            hintStyle: const TextStyle(
-                              color: AppColors.outlineVariant,
+                            hintStyle: TextStyle(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.outlineVariant,
                             ),
-                            border: InputBorder.none,
+                            fillColor: Theme.of(
+                              context,
+                            ).colorScheme.surfaceContainerLow,
+                            enabledBorder: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
                           style: textTheme.bodyLarge,
@@ -395,10 +407,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceContainerLow,
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: AppColors.outlineVariant.withValues(alpha: 0.1),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.outlineVariant.withValues(alpha: 0.1),
                       ),
                     ),
                     child: Row(
@@ -407,14 +421,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           width: 40,
                           height: 40,
                           decoration: BoxDecoration(
-                            color: AppColors.secondaryContainer.withValues(
-                              alpha: 0.3,
-                            ),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .secondaryContainer
+                                .withValues(alpha: 0.3),
                             shape: BoxShape.circle,
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.autorenew,
-                            color: AppColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                         const SizedBox(width: 16),
@@ -429,7 +444,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               Text(
                                 isAr ? 'كرر هذا شهرياً' : 'Repeat this monthly',
                                 style: textTheme.bodySmall?.copyWith(
-                                  color: AppColors.onSurfaceVariant,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurfaceVariant,
                                 ),
                               ),
                             ],
@@ -454,7 +471,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   const SizedBox(height: 12),
                   CustomPaint(
                     painter: DashedBorderPainter(
-                      color: AppColors.outlineVariant,
+                      color: Theme.of(context).colorScheme.outlineVariant,
                       strokeWidth: 2,
                       gap: 6,
                     ),
@@ -462,9 +479,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       width: double.infinity,
                       height: 120,
                       decoration: BoxDecoration(
-                        color: AppColors.surfaceContainerLow.withValues(
-                          alpha: 0.3,
-                        ),
+                        color: Theme.of(context).colorScheme.surfaceContainerLow
+                            .withValues(alpha: 0.3),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: Column(
@@ -473,13 +489,17 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           Container(
                             width: 48,
                             height: 48,
-                            decoration: const BoxDecoration(
-                              color: AppColors.surfaceContainerHighest,
+                            decoration: BoxDecoration(
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.surfaceContainerHighest,
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.add_photo_alternate_outlined,
-                              color: AppColors.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(height: 8),
@@ -488,7 +508,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 ? 'اضغط لإرفاق الإيصال'
                                 : 'Tap to attach receipt',
                             style: textTheme.labelLarge?.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -512,23 +534,25 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.surface.withValues(alpha: 0),
-                    AppColors.surface,
-                    AppColors.surface,
+                    Theme.of(context).colorScheme.surface.withValues(alpha: 0),
+                    Theme.of(context).colorScheme.surface,
+                    Theme.of(context).colorScheme.surface,
                   ],
                 ),
               ),
               child: ElevatedButton(
                 onPressed: _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 56),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
                   ),
                   elevation: 8,
-                  shadowColor: AppColors.primary.withValues(alpha: 0.4),
+                  shadowColor: Theme.of(
+                    context,
+                  ).colorScheme.primary.withValues(alpha: 0.4),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -558,6 +582,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     );
   }
 }
+
 class DashedBorderPainter extends CustomPainter {
   final Color color;
   final double strokeWidth;
@@ -587,10 +612,7 @@ class DashedBorderPainter extends CustomPainter {
     final Path path = Path()..addRRect(rrect);
 
     canvas.drawPath(
-      dashPath(
-        path,
-        dashArray: CircularIntervalList<double>([gap, gap]),
-      ),
+      dashPath(path, dashArray: CircularIntervalList<double>([gap, gap])),
       paint,
     );
   }

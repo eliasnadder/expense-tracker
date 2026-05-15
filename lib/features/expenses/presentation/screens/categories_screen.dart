@@ -1,5 +1,4 @@
 import 'package:expense_tracker/core/constants/expense_categories.dart';
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
 import 'package:flutter/material.dart';
@@ -15,15 +14,15 @@ class CategoriesScreen extends StatelessWidget {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: theme.colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: AppColors.surface,
+        backgroundColor: theme.colorScheme.surface,
         elevation: 0,
         title: Text(
           isAr ? 'الفئات' : 'Categories',
           style: textTheme.titleLarge?.copyWith(
             fontWeight: FontWeight.bold,
-            color: AppColors.primary,
+            color: theme.colorScheme.primary,
           ),
         ),
       ),
@@ -36,6 +35,7 @@ class CategoriesScreen extends StatelessWidget {
               isAr ? 'إدارة الفئات' : 'Manage Categories',
               style: textTheme.displaySmall?.copyWith(
                 fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
               ),
             ),
             const SizedBox(height: 8),
@@ -44,7 +44,7 @@ class CategoriesScreen extends StatelessWidget {
                   ? 'إدارة تصنيفات الإنفاق الخاصة بك.'
                   : 'Manage your spending classifications.',
               style: textTheme.bodyLarge?.copyWith(
-                color: AppColors.onSurfaceVariant,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
             const SizedBox(height: 24),
@@ -54,11 +54,11 @@ class CategoriesScreen extends StatelessWidget {
               height: 56,
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
-                color: AppColors.surfaceContainerLow,
+                color: theme.colorScheme.surfaceContainerLow,
                 borderRadius: BorderRadius.circular(100),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.02),
+                    color: theme.colorScheme.shadow.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -66,7 +66,7 @@ class CategoriesScreen extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.search, color: AppColors.onSurfaceVariant),
+                  Icon(Icons.search, color: theme.colorScheme.onSurfaceVariant),
                   const SizedBox(width: 12),
                   Expanded(
                     child: TextField(
@@ -74,8 +74,13 @@ class CategoriesScreen extends StatelessWidget {
                         hintText: isAr
                             ? 'البحث عن الفئات...'
                             : 'Search categories...',
+                        fillColor: Theme.of(
+                          context,
+                        ).colorScheme.surfaceContainerLow,
                         border: InputBorder.none,
-                        hintStyle: const TextStyle(color: AppColors.outline),
+                        hintStyle: textTheme.bodyLarge?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     ),
                   ),
@@ -110,11 +115,13 @@ class CategoriesScreen extends StatelessWidget {
                       subtitle: isAr ? '$count معاملات' : '$count transactions',
                       emoji: cat.emoji,
                       iconBg: cat.type == 'income'
-                          ? AppColors.income.withValues(alpha: 0.1)
-                          : AppColors.secondaryContainer.withValues(alpha: 0.3),
+                          ? theme.colorScheme.primary.withValues(alpha: 0.1)
+                          : theme.colorScheme.secondaryContainer.withValues(
+                              alpha: 0.3,
+                            ),
                       iconColor: cat.type == 'income'
-                          ? AppColors.income
-                          : AppColors.primary,
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onPrimaryContainer,
                     );
                   },
                 );
@@ -136,8 +143,8 @@ class CategoriesScreen extends StatelessWidget {
             ),
           );
         },
-        backgroundColor: AppColors.primaryContainer,
-        foregroundColor: AppColors.onPrimaryContainer,
+        backgroundColor: theme.colorScheme.primaryContainer,
+        foregroundColor: theme.colorScheme.onPrimaryContainer,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         child: const Icon(Icons.add),
       ),
@@ -167,14 +174,16 @@ class _CategoryBentoCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLow,
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
-          color: AppColors.surfaceContainerHighest.withValues(alpha: 0.5),
+          color: Theme.of(
+            context,
+          ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: 0.01),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -197,9 +206,9 @@ class _CategoryBentoCard extends StatelessWidget {
                   child: Text(emoji, style: const TextStyle(fontSize: 22)),
                 ),
               ),
-              const Icon(
+              Icon(
                 Icons.more_vert,
-                color: AppColors.onSurfaceVariant,
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
                 size: 20,
               ),
             ],
@@ -215,7 +224,7 @@ class _CategoryBentoCard extends StatelessWidget {
           Text(
             subtitle,
             style: textTheme.labelSmall?.copyWith(
-              color: AppColors.onSurfaceVariant,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,

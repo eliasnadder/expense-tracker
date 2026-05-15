@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/ai_insight/presentation/bloc/ai_bloc.dart';
 import 'package:expense_tracker/features/ai_insight/presentation/bloc/ai_event.dart';
 import 'package:expense_tracker/features/ai_insight/presentation/bloc/ai_state.dart';

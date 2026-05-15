@@ -19,7 +19,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Scaffold(
-      backgroundColor: AppColors.surface,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           PageView(
@@ -67,9 +67,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    AppColors.surface.withValues(alpha: 0),
-                    AppColors.surface.withValues(alpha: 0.8),
-                    AppColors.surface,
+                    Theme.of(context).colorScheme.surface.withValues(alpha: 0),
+                    Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+                    Theme.of(context).colorScheme.surface,
                   ],
                 ),
               ),
@@ -87,8 +87,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         height: 8,
                         decoration: BoxDecoration(
                           color: isSelected
-                              ? AppColors.primary
-                              : AppColors.surfaceVariant,
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.surfaceVariant,
                           borderRadius: BorderRadius.circular(100),
                         ),
                       );
@@ -105,7 +105,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         child: Text(
                           isAr ? 'تخطي' : 'Skip',
                           style: textTheme.labelLarge?.copyWith(
-                            color: AppColors.primary,
+                            color: Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -122,8 +122,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).colorScheme.primary,
+                          foregroundColor: Theme.of(context).colorScheme.onPrimary,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 32,
                             vertical: 16,

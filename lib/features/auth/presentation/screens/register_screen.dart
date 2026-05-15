@@ -45,10 +45,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       children: [
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: AppColors.onSurfaceVariant,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
           ),
         ),
         const SizedBox(height: 8),
@@ -59,17 +59,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
           validator: validator,
           decoration: InputDecoration(
             hintText: hint,
-            prefixIcon: Icon(icon, color: AppColors.onSurfaceVariant, size: 20),
+            prefixIcon: Icon(
+              icon,
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+              size: 20,
+            ),
             suffixIcon: suffixIcon,
             filled: true,
-            fillColor: AppColors.surfaceContainerHighest.withValues(alpha: 0.5),
+            fillColor: Theme.of(
+              context,
+            ).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
               borderSide: BorderSide.none,
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: AppColors.primary, width: 2),
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2,
+              ),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
@@ -110,13 +119,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 borderRadius: BorderRadius.circular(28),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.shadow.withValues(alpha: 0.05),
                     blurRadius: 20,
                     offset: const Offset(0, 10),
                   ),
                 ],
                 border: Border.all(
-                  color: AppColors.outlineVariant.withValues(alpha: 0.2),
+                  color: Theme.of(
+                    context,
+                  ).colorScheme.outlineVariant.withValues(alpha: 0.2),
                 ),
               ),
               child: Form(
@@ -128,12 +141,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       width: 48,
                       height: 48,
                       decoration: BoxDecoration(
-                        color: AppColors.primaryContainer,
+                        color: Theme.of(context).colorScheme.primaryContainer,
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(
+                      child: Icon(
                         Icons.app_registration,
-                        color: AppColors.onPrimaryContainer,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                         size: 28,
                       ),
                     ),
@@ -141,7 +154,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Text(
                       isAr ? 'إنشاء حساب' : 'Create Account',
                       style: textTheme.headlineSmall?.copyWith(
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -151,7 +164,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ? 'انضم إلى Financial Hub لإدارة ثروتك.'
                           : 'Join Financial Hub to manage your wealth.',
                       style: textTheme.bodyMedium?.copyWith(
-                        color: AppColors.onSurfaceVariant,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       textAlign: TextAlign.center,
                     ),
@@ -212,7 +225,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           _obscurePassword
                               ? Icons.visibility_off
                               : Icons.visibility,
-                          color: AppColors.onSurfaceVariant,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         onPressed: () => setState(
                           () => _obscurePassword = !_obscurePassword,
@@ -244,7 +257,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           value: _agreeToTerms,
                           onChanged: (v) =>
                               setState(() => _agreeToTerms = v ?? false),
-                          activeColor: AppColors.primary,
+                          activeColor: Theme.of(context).colorScheme.primary,
                         ),
                         Expanded(
                           child: Text(
@@ -252,7 +265,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 ? 'أوافق على شروط الخدمة وسياسة الخصوصية.'
                                 : 'I agree to the Terms of Service and Privacy Policy.',
                             style: textTheme.bodySmall?.copyWith(
-                              color: AppColors.onSurfaceVariant,
+                              color: Theme.of(
+                                context,
+                              ).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -288,7 +303,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
+                          backgroundColor: Theme.of(
+                            context,
+                          ).colorScheme.primary,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(100),
@@ -297,7 +314,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         child: Text(
                           isAr ? 'إنشاء حساب' : 'Sign Up',
                           style: textTheme.labelLarge?.copyWith(
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onPrimary,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -314,7 +331,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               ? 'لديك حساب بالفعل؟'
                               : 'Already have an account?',
                           style: textTheme.bodySmall?.copyWith(
-                            color: AppColors.onSurfaceVariant,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         TextButton(
@@ -322,7 +341,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Text(
                             isAr ? 'تسجيل الدخول' : 'Log In',
                             style: textTheme.labelLarge?.copyWith(
-                              color: AppColors.primary,
+                              color: Theme.of(context).colorScheme.primary,
                               fontWeight: FontWeight.bold,
                             ),
                           ),

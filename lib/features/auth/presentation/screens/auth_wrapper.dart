@@ -13,7 +13,7 @@ class AuthWrapper extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthAuthenticated) {
-          return HomeScreen(user: state.user); // ✅ بدل الـ placeholder
+          return HomeScreen(user: state.user);
         }
         if (state is AuthLoading || state is AuthInitial) {
           return const Scaffold(

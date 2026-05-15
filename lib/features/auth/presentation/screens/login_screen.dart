@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
@@ -44,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: AppColors.expense,
+                backgroundColor: Theme.of(context).colorScheme.error,
               ),
             );
           } else if (state is AuthAuthenticated) {
@@ -128,7 +127,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(
                       'Forgot Password?',
                       style: textTheme.labelLarge?.copyWith(
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
@@ -167,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             style: TextButton.styleFrom(
                               minimumSize: const Size(double.infinity, 48),
-                              foregroundColor: AppColors.primary,
+                              foregroundColor: Theme.of(context).colorScheme.primary,
                             ),
                             child: const Text('Continue as Guest'),
                           ),
@@ -231,17 +230,17 @@ class _Divider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Divider(color: AppColors.outlineVariant)),
+        Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
             'or',
             style: Theme.of(
               context,
-            ).textTheme.labelMedium?.copyWith(color: AppColors.outline),
+            ).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
           ),
         ),
-        Expanded(child: Divider(color: AppColors.outlineVariant)),
+        Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
       ],
     );
   }
@@ -269,8 +268,8 @@ class _SocialButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
-          side: const BorderSide(color: AppColors.outline),
-          foregroundColor: AppColors.onSurface,
+          side: BorderSide(color: Theme.of(context).colorScheme.outline),
+          foregroundColor: Theme.of(context).colorScheme.onSurface,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -281,7 +280,7 @@ class _SocialButton extends StatelessWidget {
               label,
               style: Theme.of(
                 context,
-              ).textTheme.labelLarge?.copyWith(color: AppColors.onSurface),
+              ).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.onSurface),
             ),
           ],
         ),

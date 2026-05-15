@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Colour tokens
+// Static colour tokens  (kept for backward-compat & const contexts)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class AppColors {
@@ -15,7 +15,7 @@ class AppColors {
   static const secondaryContainer = Color(0xFF8A4CFC);
   static const onSecondaryContainer = Color(0xFFFFFBFF);
 
-  // Surface – light defaults (widgets that hardcode these stay light-aware)
+  // Surfaces (light-mode reference values)
   static const background = Color(0xFFF8F9FA);
   static const surface = Color(0xFFF8F9FA);
   static const surfaceContainerLowest = Color(0xFFFFFFFF);
@@ -38,7 +38,7 @@ class AppColors {
   static const expenseContainer = Color(0xFFFFDAD6);
   static const warning = Color(0xFFF59E0B);
 
-  // Aliases kept for backward-compat
+  // Aliases
   static Color get inversePrimary => primaryContainer;
   static Color get surfaceVariant => surfaceContainerHigh;
   static Color get tertiary => income;
@@ -47,7 +47,70 @@ class AppColors {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Dark-mode colour tokens (used only inside darkTheme below)
+// Context-aware colour extension
+// Use `context.col.primary` instead of `AppColors.primary` in widgets so
+// colours automatically switch between light and dark themes.
+// ─────────────────────────────────────────────────────────────────────────────
+
+extension AppColorsContext on BuildContext {
+  /// Shorthand: `context.col.income`, `context.col.surface`, etc.
+  AppThemeColors get col => AppThemeColors(Theme.of(this).colorScheme);
+}
+
+/// Maps every logical colour name used across the app to the correct
+/// [ColorScheme] slot for the active theme.
+class AppThemeColors {
+  final ColorScheme cs;
+  const AppThemeColors(this.cs);
+
+  // ── Primary ────────────────────────────────────────────────────────────────
+  Color get primary => cs.primary;
+  Color get primaryContainer => cs.primaryContainer;
+  Color get onPrimary => cs.onPrimary;
+  Color get onPrimaryContainer => cs.onPrimaryContainer;
+  Color get inversePrimary => cs.inversePrimary;
+
+  // ── Secondary ──────────────────────────────────────────────────────────────
+  Color get secondary => cs.secondary;
+  Color get secondaryContainer => cs.secondaryContainer;
+  Color get onSecondaryContainer => cs.onSecondaryContainer;
+
+  // ── Surfaces ───────────────────────────────────────────────────────────────
+  Color get surface => cs.surface;
+  Color get surfaceContainerLowest => cs.surfaceContainerLowest;
+  Color get surfaceContainerLow => cs.surfaceContainerLow;
+  Color get surfaceContainer => cs.surfaceContainer;
+  Color get surfaceContainerHigh => cs.surfaceContainerHigh;
+  Color get surfaceContainerHighest => cs.surfaceContainerHighest;
+  Color get surfaceVariant => cs.surfaceContainerHigh; // alias
+
+  // ── Content ────────────────────────────────────────────────────────────────
+  Color get onSurface => cs.onSurface;
+  Color get onSurfaceVariant => cs.onSurfaceVariant;
+  Color get outline => cs.outline;
+  Color get outlineVariant => cs.outlineVariant;
+
+  // ── Semantic (app-specific) ────────────────────────────────────────────────
+  /// Income / positive amounts → tertiary slot (teal light / cyan dark)
+  Color get income => cs.tertiary;
+  Color get incomeContainer => cs.tertiaryContainer;
+  Color get onIncomeContainer => cs.onTertiaryContainer;
+  Color get tertiary => cs.tertiary;
+  Color get tertiaryContainer => cs.tertiaryContainer;
+  Color get onTertiaryContainer => cs.onTertiaryContainer;
+
+  /// Expense / error → error slot (red light / pink-red dark)
+  Color get expense => cs.error;
+  Color get expenseContainer => cs.errorContainer;
+  Color get onExpense => cs.onError;
+  Color get onExpenseContainer => cs.onErrorContainer;
+  Color get error => cs.error;
+  Color get errorContainer => cs.errorContainer;
+  Color get onError => cs.onError;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Dark-mode colour tokens  (internal use by AppTheme.darkTheme only)
 // ─────────────────────────────────────────────────────────────────────────────
 
 class _DarkColors {
@@ -82,69 +145,66 @@ class _DarkColors {
 // ─────────────────────────────────────────────────────────────────────────────
 
 class AppTheme {
-  // ── shared font constant ─────────────────────────────────────────────────
-  // pubspec.yaml declares: family: HankenGrotesk  (no space)
   static const _font = 'HankenGrotesk';
 
-  // ── light text theme ─────────────────────────────────────────────────────
+  // ── Text themes ───────────────────────────────────────────────────────────
   static TextTheme get _lightTextTheme => _buildTextTheme(AppColors.onSurface);
-
   static TextTheme get _darkTextTheme => _buildTextTheme(_DarkColors.onSurface);
 
-  static TextTheme _buildTextTheme(Color baseColor) => TextTheme(
+  static TextTheme _buildTextTheme(Color base) => TextTheme(
     displayLarge: TextStyle(
       fontFamily: _font,
       fontSize: 57,
       fontWeight: FontWeight.w400,
       letterSpacing: -0.25,
-      color: baseColor,
+      color: base,
     ),
     headlineLarge: TextStyle(
       fontFamily: _font,
       fontSize: 32,
       fontWeight: FontWeight.w400,
-      color: baseColor,
+      color: base,
     ),
     titleLarge: TextStyle(
       fontFamily: _font,
       fontSize: 22,
       fontWeight: FontWeight.w500,
-      color: baseColor,
+      color: base,
     ),
     titleMedium: TextStyle(
       fontFamily: _font,
       fontSize: 16,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.15,
-      color: baseColor,
+      color: base,
     ),
     bodyLarge: TextStyle(
       fontFamily: _font,
       fontSize: 16,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.5,
-      color: baseColor.withValues(alpha: 0.8),
+      color: base.withValues(alpha: 0.8),
     ),
     bodyMedium: TextStyle(
       fontFamily: _font,
       fontSize: 14,
       fontWeight: FontWeight.w400,
       letterSpacing: 0.25,
-      color: baseColor.withValues(alpha: 0.8),
+      color: base.withValues(alpha: 0.8),
     ),
     labelLarge: TextStyle(
       fontFamily: _font,
       fontSize: 14,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.1,
-      color: baseColor.withValues(alpha: 0.8),
+      color: base.withValues(alpha: 0.8),
     ),
     labelMedium: TextStyle(
       fontFamily: _font,
       fontSize: 12,
       fontWeight: FontWeight.w500,
       letterSpacing: 0.5,
-      color: baseColor.withValues(alpha: 0.7),
+      color: base.withValues(alpha: 0.7),
     ),
   );
 
@@ -220,9 +280,9 @@ class AppTheme {
         borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
         borderSide: BorderSide(color: AppColors.outlineVariant, width: 1),
       ),
-      focusedBorder: UnderlineInputBorder(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-        borderSide: const BorderSide(color: AppColors.primary, width: 2),
+      focusedBorder: const UnderlineInputBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(12)),
+        borderSide: BorderSide(color: AppColors.primary, width: 2),
       ),
       labelStyle: _lightTextTheme.bodyMedium,
       hintStyle: _lightTextTheme.bodyMedium?.copyWith(color: AppColors.outline),
@@ -294,7 +354,7 @@ class AppTheme {
       elevation: 0,
       centerTitle: true,
       titleTextStyle: _darkTextTheme.titleLarge,
-      iconTheme: IconThemeData(color: _DarkColors.onSurface),
+      iconTheme: const IconThemeData(color: _DarkColors.onSurface),
     ),
     cardTheme: CardThemeData(
       color: _DarkColors.surfaceLowest,
@@ -307,13 +367,13 @@ class AppTheme {
       indicatorColor: _DarkColors.secondaryContainer,
       height: 80,
       labelTextStyle: WidgetStateProperty.resolveWith((states) {
-        final base = states.contains(WidgetState.selected)
+        final w = states.contains(WidgetState.selected)
             ? FontWeight.w600
             : FontWeight.normal;
         return TextStyle(
           fontFamily: _font,
           fontSize: 12,
-          fontWeight: base,
+          fontWeight: w,
           color: states.contains(WidgetState.selected)
               ? _DarkColors.onSurface
               : _DarkColors.onSurfaceVariant,
@@ -357,29 +417,27 @@ class AppTheme {
         textStyle: _darkTextTheme.labelLarge,
       ),
     ),
-    floatingActionButtonTheme: FloatingActionButtonThemeData(
+    floatingActionButtonTheme: const FloatingActionButtonThemeData(
       backgroundColor: _DarkColors.primaryContainer,
       foregroundColor: _DarkColors.onPrimaryContainer,
-      shape: const RoundedRectangleBorder(
+      shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(28)),
       ),
       elevation: 2,
     ),
     switchTheme: SwitchThemeData(
       thumbColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
-          return _DarkColors.primary;
-        }
-        return _DarkColors.outlineVariant;
+        return states.contains(WidgetState.selected)
+            ? _DarkColors.primary
+            : _DarkColors.outlineVariant;
       }),
       trackColor: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.selected)) {
-          return _DarkColors.primary.withValues(alpha: 0.3);
-        }
-        return _DarkColors.surfaceHighest;
+        return states.contains(WidgetState.selected)
+            ? _DarkColors.primary.withValues(alpha: 0.3)
+            : _DarkColors.surfaceHighest;
       }),
     ),
-    dividerTheme: DividerThemeData(color: _DarkColors.outlineVariant),
+    dividerTheme: const DividerThemeData(color: _DarkColors.outlineVariant),
     dialogTheme: DialogThemeData(
       backgroundColor: _DarkColors.surfaceContainer,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(28)),
