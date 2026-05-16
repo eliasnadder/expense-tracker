@@ -128,7 +128,9 @@ class _BudgetCardState extends State<BudgetCard> {
                           icon: Icon(
                             Icons.edit_outlined,
                             size: 28,
-                            color: Colors.white,
+                            color: Theme.of(
+                              context,
+                            ).colorScheme.onPrimaryContainer,
                           ),
                         ),
                       ],
@@ -144,7 +146,9 @@ class _BudgetCardState extends State<BudgetCard> {
                                   ? 'إجمالي الميزانية الشهرية'
                                   : 'Total Monthly Budget',
                               style: textTheme.titleMedium?.copyWith(
-                                color: theme.colorScheme.onPrimaryContainer,
+                                color: isOver
+                                    ? Colors.white70
+                                    : theme.colorScheme.onPrimaryContainer,
                               ),
                             ),
                             widget.isBudgetScreen
@@ -157,12 +161,16 @@ class _BudgetCardState extends State<BudgetCard> {
                                     icon: Icon(
                                       Icons.edit_outlined,
                                       size: 28,
-                                      color: Colors.white,
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
                                     ),
                                   )
-                                : const Icon(
+                                : Icon(
                                     Icons.account_balance_wallet_outlined,
-                                    color: Colors.white,
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimaryContainer,
                                     size: 28,
                                   ),
                           ],
@@ -179,16 +187,22 @@ class _BudgetCardState extends State<BudgetCard> {
                                         '\$${NumberFormat().format(totalSpent)}',
                                     style: textTheme.displayMedium?.copyWith(
                                       fontWeight: FontWeight.bold,
-                                      color:
-                                          theme.colorScheme.onPrimaryContainer,
+                                      color: isOver
+                                          ? Colors.white70
+                                          : theme
+                                                .colorScheme
+                                                .onPrimaryContainer,
                                     ),
                                   ),
                                   TextSpan(
                                     text:
                                         ' / \$${NumberFormat().format(totalLimit)}',
                                     style: textTheme.titleLarge?.copyWith(
-                                      color:
-                                          theme.colorScheme.onPrimaryContainer,
+                                      color: isOver
+                                          ? Colors.white70
+                                          : theme
+                                                .colorScheme
+                                                .onPrimaryContainer,
                                     ),
                                   ),
                                 ],
@@ -230,17 +244,23 @@ class _BudgetCardState extends State<BudgetCard> {
                               ? '$daysLeft يوم متبقي'
                               : '$daysLeft days left',
                           style: textTheme.labelMedium?.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onPrimaryContainer.withAlpha(200),
+                            color: isOver
+                                ? Colors.white70
+                                : Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer
+                                      .withAlpha(200),
                           ),
                         ),
                         Text(
                           '${(progress * 100).toInt()}%',
                           style: textTheme.labelLarge?.copyWith(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onPrimaryContainer.withAlpha(200),
+                            color: isOver
+                                ? Colors.white70
+                                : Theme.of(context)
+                                      .colorScheme
+                                      .onPrimaryContainer
+                                      .withAlpha(200),
                             fontWeight: FontWeight.bold,
                           ),
                         ),

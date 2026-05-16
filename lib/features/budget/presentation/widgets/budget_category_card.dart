@@ -1,5 +1,6 @@
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_state.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
+import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BudgetCategoryCard extends StatelessWidget {
@@ -47,10 +48,14 @@ class BudgetCategoryCard extends StatelessWidget {
                 : (isAr ? 'جيد' : 'On Track')),
       statusColor: isCritical
           ? Theme.of(context).colorScheme.error
-          : (isWarning ? Colors.orange : Theme.of(context).colorScheme.primary),
+          : (isWarning
+                ? AppColors.warning
+                : Theme.of(context).colorScheme.primary),
       progressColor: isCritical
           ? Theme.of(context).colorScheme.error
-          : (isWarning ? Colors.orange : Theme.of(context).colorScheme.primary),
+          : (isWarning
+                ? AppColors.warning
+                : Theme.of(context).colorScheme.primary),
       isCritical: isCritical,
       isWarning: isWarning,
     );
@@ -93,14 +98,14 @@ class _BudgetBentoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: isCritical
             ? Theme.of(context).colorScheme.error.withValues(alpha: 0.1)
-            : Theme.of(context).colorScheme.surfaceContainerLow,
+            : Theme.of(context).colorScheme.surfaceContainerLowest,
         borderRadius: BorderRadius.circular(28),
         border: Border.all(
           color: isCritical
               ? Theme.of(context).colorScheme.error.withValues(alpha: 0.3)
               : Theme.of(
                   context,
-                ).colorScheme.outlineVariant.withValues(alpha: 0.3),
+                ).colorScheme.outlineVariant.withValues(alpha: 0.28),
         ),
       ),
       child: Column(
@@ -122,8 +127,8 @@ class _BudgetBentoCard extends StatelessWidget {
                 child: Icon(
                   icon,
                   color: isCritical
-                      ? Theme.of(context).colorScheme.error
-                      : Colors.white,
+                      ? Theme.of(context).colorScheme.onError
+                      : Theme.of(context).colorScheme.onSecondaryContainer,
                   size: 24,
                 ),
               ),
@@ -146,9 +151,9 @@ class _BudgetBentoCard extends StatelessWidget {
                   status,
                   style: textTheme.labelSmall?.copyWith(
                     color: isCritical
-                        ? Colors.white
+                        ? Theme.of(context).colorScheme.onError
                         : (isWarning
-                              ? Theme.of(context).colorScheme.secondary
+                              ? Theme.of(context).colorScheme.onSecondary
                               : Theme.of(context).colorScheme.onSurfaceVariant),
                     fontWeight: FontWeight.bold,
                   ),
