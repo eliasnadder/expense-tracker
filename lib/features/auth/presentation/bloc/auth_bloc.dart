@@ -3,6 +3,7 @@ import 'package:expense_tracker/features/auth/domain/entities/user_entity.dart';
 import 'package:expense_tracker/features/auth/domain/repositories/auth_repository.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -14,6 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<GoogleSignInRequested>(_onGoogleSignInRequested);
     on<EmailSignInRequested>(_onEmailSignInRequested);
     on<EmailSignUpRequested>(_onEmailSignUpRequested);
+    on<SetupCompleted>(_onSetupCompleted);
     on<SignOutRequested>(_onSignOutRequested);
     on<_AuthUserChanged>((event, emit) {
       final user = event.user;
@@ -82,6 +84,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthAuthenticated(user));
     } catch (e) {
       emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<void> _onSetupCompleted(
+    SetupCompleted event,
+    Emitter<AuthState> emit,
+  ) async {
+    try {
+      // Re-fetch user from Firestore to get updated isSetupComplete
+      final user = await authRepository.getUserById(event.userId);
+      if (user != null) {
+        emit(AuthAuthenticated(user));
+      }
+    } catch (e) {
+      debugPrint('SetupCompleted failed: $e');
     }
   }
 

@@ -1,12 +1,26 @@
-import 'package:expense_tracker/core/constants/expense_categories.dart';
+import 'package:expense_tracker/features/categories/domain/entities/category_entity.dart';
+import 'package:expense_tracker/features/categories/presentation/bloc/category_bloc.dart';
+import 'package:expense_tracker/features/categories/presentation/bloc/category_state.dart';
 import 'package:expense_tracker/features/expenses/data/models/expense_model.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
+import 'package:expense_tracker/features/expenses/presentation/widgets/styled_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:path_drawing/path_drawing.dart';
 import 'package:uuid/uuid.dart';
+
+/// Simple data class for category display in the picker
+class _CategoryOption {
+  final String name;
+  final String icon;
+
+  const _CategoryOption({required this.name, required this.icon});
+
+  String get nameAr => name;
+  String get emoji => icon;
+}
 
 class AddExpenseScreen extends StatefulWidget {
   final String userId;
@@ -21,13 +35,39 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   final _amountController = TextEditingController(text: '0.00');
   final _descriptionController = TextEditingController();
 
-  ExpenseCategory _selectedCategory = kCategories.first;
+  _CategoryOption _selectedCategory = const _CategoryOption(
+    name: '',
+    icon: '📦',
+  );
   DateTime _selectedDate = DateTime.now();
   bool _isRecurring = false;
   String _selectedType = 'expense'; // 'income' or 'expense'
+  List<CategoryEntity> _userCategories = [];
 
-  List<ExpenseCategory> get _filteredCategories =>
-      kCategories.where((c) => c.type == _selectedType).toList();
+  List<_CategoryOption> get _filteredCategories {
+    return _userCategories
+        .map((cat) => _CategoryOption(name: cat.name, icon: cat.icon))
+        .toList();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  void _loadCategories() {
+    final state = context.read<CategoryBloc>().state;
+    if (state is CategoryLoaded) {
+      _userCategories = state.categories;
+      if (_userCategories.isNotEmpty) {
+        _selectedCategory = _CategoryOption(
+          name: _userCategories.first.name,
+          icon: _userCategories.first.icon,
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -60,7 +100,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           ? _selectedCategory.name
           : _descriptionController.text.trim(),
       date: _selectedDate,
-      emoji: _selectedCategory.emoji,
+      emoji: _selectedCategory.icon,
       type: _selectedType,
     );
 
@@ -114,7 +154,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           child: GestureDetector(
                             onTap: () => setState(() {
                               _selectedType = 'expense';
-                              _selectedCategory = _filteredCategories.first;
+                              final cats = _filteredCategories;
+                              if (cats.isNotEmpty) {
+                                _selectedCategory = cats.first;
+                              }
                             }),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -143,7 +186,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           child: GestureDetector(
                             onTap: () => setState(() {
                               _selectedType = 'income';
-                              _selectedCategory = _filteredCategories.first;
+                              final cats = _filteredCategories;
+                              if (cats.isNotEmpty) {
+                                _selectedCategory = cats.first;
+                              }
                             }),
                             child: Container(
                               padding: const EdgeInsets.symmetric(vertical: 12),
@@ -246,167 +292,107 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 4,
-                          mainAxisSpacing: 12,
-                          crossAxisSpacing: 12,
-                          childAspectRatio: 0.9,
+                  if (_filteredCategories.isEmpty)
+                    Padding(
+                      padding: const EdgeInsets.all(24),
+                      child: Text(
+                        isAr
+                            ? 'لم تقم بإضافة فئات بعد. اذهب إلى إدارة الفئات لإضافة فئاتك.'
+                            : "You haven't added any categories yet. Go to Manage Categories to add yours.",
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
-                    itemCount: _filteredCategories.length,
-                    itemBuilder: (context, index) {
-                      final cat = _filteredCategories[index];
-                      final isSelected = cat.name == _selectedCategory.name;
-                      return GestureDetector(
-                        onTap: () => setState(() => _selectedCategory = cat),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? theme.colorScheme.primaryContainer
-                                : theme.colorScheme.surfaceContainerLow,
-                            borderRadius: BorderRadius.circular(16),
-                            border: Border.all(
+                      ),
+                    )
+                  else
+                    GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 4,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 0.9,
+                          ),
+                      itemCount: _filteredCategories.length,
+                      itemBuilder: (context, index) {
+                        final cat = _filteredCategories[index];
+                        final isSelected = cat.name == _selectedCategory.name;
+                        return GestureDetector(
+                          onTap: () => setState(() => _selectedCategory = cat),
+                          child: Container(
+                            decoration: BoxDecoration(
                               color: isSelected
-                                  ? theme.colorScheme.primary
-                                  : theme.colorScheme.surface.withValues(
-                                      alpha: 0,
-                                    ),
+                                  ? theme.colorScheme.primaryContainer
+                                  : theme.colorScheme.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: isSelected
+                                    ? theme.colorScheme.primary
+                                    : theme.colorScheme.surface.withValues(
+                                        alpha: 0,
+                                      ),
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  cat.icon,
+                                  style: const TextStyle(fontSize: 28),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  cat.name,
+                                  style: textTheme.labelSmall?.copyWith(
+                                    color: isSelected
+                                        ? theme.colorScheme.onPrimaryContainer
+                                        : theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: isSelected
+                                        ? FontWeight.bold
+                                        : FontWeight.normal,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                cat.emoji,
-                                style: const TextStyle(fontSize: 28),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                isAr ? cat.nameAr : cat.name,
-                                style: textTheme.labelSmall?.copyWith(
-                                  color: isSelected
-                                      ? theme.colorScheme.onPrimaryContainer
-                                      : theme.colorScheme.onSurfaceVariant,
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
                   const SizedBox(height: 32),
 
                   // Date Input
-                  GestureDetector(
+                  StyledInputField(
+                    valueText: DateFormat(
+                      'EEEE, MMM dd, yyyy',
+                    ).format(_selectedDate),
+                    label: isAr ? 'التاريخ' : 'Date',
+                    readOnly: true,
+                    trailing: Icon(
+                      Icons.calendar_month,
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    ),
                     onTap: _pickDate,
-                    child: Container(
-                      height: 70,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 24,
-                        vertical: 12,
-                      ),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHigh,
-                        borderRadius: BorderRadius.circular(100),
-                        boxShadow: [
-                          BoxShadow(
-                            color: theme.colorScheme.shadow.withValues(
-                              alpha: 0.05,
-                            ),
-                            blurRadius: 15,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isAr ? 'التاريخ' : 'Date',
-                                style: textTheme.labelMedium?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                DateFormat(
-                                  'EEEE, MMM dd, yyyy',
-                                ).format(_selectedDate),
-                                style: textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                          Icon(
-                            Icons.calendar_month,
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant,
-                          ),
-                        ],
-                      ),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 12,
                     ),
                   ),
                   const SizedBox(height: 16),
 
                   // Description Input
-                  Container(
+                  StyledInputField(
+                    controller: _descriptionController,
+                    label: isAr ? 'ملاحظات' : 'Description',
+                    hintText: isAr ? 'أضف تفاصيل...' : 'Add details...',
+                    maxLines: 2,
                     height: 150,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 24,
-                      vertical: 12,
-                    ),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHigh,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: [
-                        BoxShadow(
-                          color: theme.colorScheme.shadow.withValues(
-                            alpha: 0.05,
-                          ),
-                          blurRadius: 15,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          isAr ? 'ملاحظات' : 'Description',
-                          style: textTheme.labelMedium?.copyWith(
-                            color: theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        TextFormField(
-                          controller: _descriptionController,
-                          maxLines: 2,
-                          decoration: InputDecoration(
-                            hintText: isAr ? 'أضف تفاصيل...' : 'Add details...',
-                            hintStyle: TextStyle(
-                              color: Theme.of(
-                                context,
-                              ).colorScheme.onSurfaceVariant.withAlpha(150),
-                            ),
-                            fillColor: theme.colorScheme.surface.withValues(
-                              alpha: 0,
-                            ),
-                            enabledBorder: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
-                          ),
-                          style: textTheme.bodyLarge,
-                        ),
-                      ],
+                    borderRadius: 30,
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
                     ),
                   ),
                   const SizedBox(height: 24),

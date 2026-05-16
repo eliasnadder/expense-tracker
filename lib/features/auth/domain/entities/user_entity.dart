@@ -8,6 +8,7 @@ class UserEntity extends Equatable {
   final String currency;
   final String language;
   final String theme;
+  final bool isSetupComplete;
 
   const UserEntity({
     required this.id,
@@ -17,6 +18,7 @@ class UserEntity extends Equatable {
     this.currency = 'USD',
     this.language = 'en',
     this.theme = 'system',
+    this.isSetupComplete = false,
   });
 
   @override
@@ -28,5 +30,6 @@ class UserEntity extends Equatable {
     currency,
     language,
     theme,
+    isSetupComplete,
   ];
 }

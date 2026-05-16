@@ -7,6 +7,7 @@ class UserModel extends UserEntity {
     required super.email,
     required super.displayName,
     super.photoUrl,
+    super.isSetupComplete,
   });
 
   // من Firebase User
@@ -26,6 +27,7 @@ class UserModel extends UserEntity {
       email: map['email'],
       displayName: map['displayName'],
       photoUrl: map['photoUrl'],
+      isSetupComplete: map['isSetupComplete'] ?? false,
     );
   }
 
@@ -35,6 +37,7 @@ class UserModel extends UserEntity {
       'email': email,
       'displayName': displayName,
       'photoUrl': photoUrl,
+      'isSetupComplete': isSetupComplete,
       'createdAt': DateTime.now().toIso8601String(),
     };
   }

@@ -17,12 +17,10 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
-
+    final color = Theme.of(context).colorScheme;
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(title: Text(isAr ? 'الملف الشخصي' : 'Profile')),
+      backgroundColor: color.surface,
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, authState) {
           final user = authState is AuthAuthenticated ? authState.user : null;
@@ -85,14 +83,6 @@ class ProfileScreen extends StatelessWidget {
                     },
                   ),
                   const SizedBox(height: 16),
-                  Text(
-                    isAr
-                        ? 'يتم تحديث أرقام هذا الشهر من معاملاتك الحالية.'
-                        : 'Monthly figures update from your current transactions.',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                  ),
                 ],
               );
             },

@@ -17,10 +17,25 @@ class AuthRepositoryImpl implements AuthRepository {
     required this.firestore,
   });
 
+  /// Fetch user data from Firestore, falling back to Firebase Auth data
+  Future<UserEntity> _getUserWithFirestoreData(User firebaseUser) async {
+    final baseUser = UserModel.fromFirebaseUser(firebaseUser);
+    try {
+      final doc = await firestore.collection('users').doc(firebaseUser.uid).get();
+      if (doc.exists) {
+        return UserModel.fromMap(doc.data()!);
+      }
+    } catch (_) {
+      // If Firestore read fails, just use basic user data
+    }
+    return baseUser;
+  }
+
   @override
   Stream<UserEntity?> get authStateChanges {
-    return firebaseAuth.authStateChanges().map((user) {
-      return user != null ? UserModel.fromFirebaseUser(user) : null;
+    return firebaseAuth.authStateChanges().asyncMap((user) async {
+      if (user == null) return null;
+      return _getUserWithFirestoreData(user);
     });
   }
 
@@ -108,6 +123,30 @@ class AuthRepositoryImpl implements AuthRepository {
         .set(userModel.toMap(), SetOptions(merge: true));
 
     return userModel;
+  }
+
+  @override
+  Future<void> markSetupComplete(String userId) async {
+    try {
+      await firestore
+          .collection('users')
+          .doc(userId)
+          .update({'isSetupComplete': true});
+    } catch (e) {
+      debugPrint('markSetupComplete failed: $e');
+    }
+  }
+
+  @override
+  Future<UserEntity?> getUserById(String userId) async {
+    try {
+      final user = firebaseAuth.currentUser;
+      if (user == null) return null;
+      return _getUserWithFirestoreData(user);
+    } catch (e) {
+      debugPrint('getUserById failed: $e');
+      return null;
+    }
   }
 
   @override

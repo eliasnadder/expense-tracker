@@ -10,4 +10,6 @@ abstract class AuthRepository {
     String displayName,
   );
   Future<void> signOut();
+  Future<void> markSetupComplete(String userId);
+  Future<UserEntity?> getUserById(String userId);
 }

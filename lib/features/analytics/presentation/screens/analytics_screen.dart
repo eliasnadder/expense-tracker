@@ -1,11 +1,14 @@
-import 'package:expense_tracker/features/analytics/presentation/widgets/ai_insight_panel.dart';
-import 'package:expense_tracker/features/analytics/presentation/widgets/report_item.dart';
-import 'package:expense_tracker/features/analytics/presentation/widgets/summary_card.dart';
+import 'package:expense_tracker/features/budget/presentation/bloc/budget_bloc.dart';
+import 'package:expense_tracker/features/budget/presentation/bloc/budget_state.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+
+enum AnalyticsRange { week, month, year }
 
 class AnalyticsScreen extends StatefulWidget {
   const AnalyticsScreen({super.key});
@@ -15,167 +18,639 @@ class AnalyticsScreen extends StatefulWidget {
 }
 
 class _AnalyticsScreenState extends State<AnalyticsScreen> {
+  AnalyticsRange selectedRange = AnalyticsRange.month;
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final textTheme = theme.textTheme;
-    final isAr = Localizations.localeOf(context).languageCode == 'ar';
-    final monthLabel = DateFormat('MMMM yyyy').format(DateTime.now());
+    final colorScheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
-      body: BlocBuilder<ExpenseBloc, ExpenseState>(
-        builder: (context, state) {
-          if (state is ExpenseLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      backgroundColor: colorScheme.surface,
+      body: SafeArea(
+        child: BlocBuilder<ExpenseBloc, ExpenseState>(
+          builder: (context, expenseState) {
+            if (expenseState is ExpenseLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          if (state is! ExpenseLoaded) {
-            return const SizedBox();
-          }
+            if (expenseState is! ExpenseLoaded) {
+              return const Center(child: Text('Unable to load analytics'));
+            }
 
-          final totalIncome = state.totalIncome;
-          final totalExpenses = state.totalExpenses;
-          // final netSavings = totalIncome - totalExpenses;
+            final expenses = expenseState.expenses;
 
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Bento Grid Summary
-                GridView.count(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 8,
-                  childAspectRatio: 12 / 11,
-                  children: [
-                    SummaryCard(
-                      title: isAr ? 'إجمالي الدخل' : 'Total Income',
-                      amount: totalIncome,
-                      trend: '+12.5%',
-                      icon: Icons.arrow_upward,
-                      iconBg: Theme.of(
-                        context,
-                      ).colorScheme.tertiary.withValues(alpha: 0.1),
-                      iconColor: Theme.of(context).colorScheme.tertiary,
-                    ),
-                    SummaryCard(
-                      title: isAr ? 'إجمالي المصاريف' : 'Total Expenses',
-                      amount: totalExpenses,
-                      trend: '-4.2%',
-                      icon: Icons.arrow_downward,
-                      iconBg: Theme.of(
-                        context,
-                      ).colorScheme.onError.withValues(alpha: 0.1),
-                      iconColor: Theme.of(context).colorScheme.onError,
-                    ),
-                    // SavingsCard(
-                    //   title: isAr ? 'صافي الادخار' : 'Net Savings',
-                    //   amount: netSavings,
-                    // ),
-                  ],
-                ),
-                const SizedBox(height: 32),
-
-                AiInsightPanel(
-                  expenses: state.currentMonthExpenses,
-                  isAr: isAr,
-                ),
-                const SizedBox(height: 32),
-
-                // Downloadable Reports
-                Text(
-                  isAr ? 'التقارير القابلة للتحميل' : 'Downloadable Reports',
-                  style: textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Container(
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surfaceContainerLowest,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.outlineVariant.withValues(alpha: 0.5),
-                    ),
-                  ),
+            if (expenses.isEmpty) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(24),
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      ReportItem(
-                        title: isAr ? 'تقرير PDF شهري' : 'Monthly PDF Report',
-                        subtitle: isAr
-                            ? 'ملخص مرئي مفصل لشهر $monthLabel'
-                            : 'Detailed visual summary of $monthLabel',
-                        icon: Icons.picture_as_pdf,
-                        iconColor: Theme.of(context).colorScheme.primary,
-                        isLast: false,
+                      Icon(
+                        Icons.analytics_outlined,
+                        size: 96,
+                        color: colorScheme.primary,
                       ),
-                      ReportItem(
-                        title: isAr ? 'تصدير CSV' : 'CSV Export',
-                        subtitle: isAr
-                            ? 'بيانات المعاملات الخام للجداول'
-                            : 'Raw transaction data for spreadsheets',
-                        icon: Icons.table_view,
-                        iconColor: Theme.of(context).colorScheme.tertiary,
-                        isLast: false,
+                      const SizedBox(height: 24),
+                      Text(
+                        'No Analytics Yet',
+                        style: theme.textTheme.headlineSmall,
                       ),
-                      ReportItem(
-                        title: isAr ? 'ملخص ضريبي' : 'Tax Summary',
-                        subtitle: isAr
-                            ? 'عرض مصنف لإعداد الضرائب'
-                            : 'Categorized view for tax preparation',
-                        icon: Icons.request_quote,
-                        iconColor: Theme.of(context).colorScheme.secondary,
-                        isLast: true,
+                      const SizedBox(height: 12),
+                      Text(
+                        'Start adding expenses to view detailed insights and charts.',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.bodyMedium,
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 32),
+              );
+            }
 
-                // Generate Report Button
-                Center(
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                            isAr
-                                ? 'إنشاء التقارير غير متاح بعد.'
-                                : 'Report generation is not available yet.',
-                          ),
+            final filteredExpenses = _filterExpenses(expenses);
+
+            final totalExpenses = filteredExpenses
+                .where((e) => e.type == 'expense')
+                .fold<double>(0, (sum, item) => sum + item.amount);
+
+            final totalIncome = filteredExpenses
+                .where((e) => e.type == 'income')
+                .fold<double>(0, (sum, item) => sum + item.amount);
+
+            final balance = totalIncome - totalExpenses;
+
+            final categoryTotals = _calculateCategoryTotals(filteredExpenses);
+
+            final topCategory = categoryTotals.entries.isEmpty
+                ? 'None'
+                : categoryTotals.entries
+                      .reduce((a, b) => a.value > b.value ? a : b)
+                      .key;
+
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _buildFilters(),
+
+                        const SizedBox(height: 24),
+
+                        GridView(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 14,
+                                mainAxisSpacing: 14,
+                                childAspectRatio: 1.2,
+                              ),
+                          children: [
+                            _OverviewCard(
+                              title: 'Expenses',
+                              value: '\$${totalExpenses.toStringAsFixed(0)}',
+                              icon: Icons.arrow_downward,
+                            ),
+                            _OverviewCard(
+                              title: 'Income',
+                              value: '\$${totalIncome.toStringAsFixed(0)}',
+                              icon: Icons.arrow_upward,
+                            ),
+                            _OverviewCard(
+                              title: 'Balance',
+                              value: '\$${balance.toStringAsFixed(0)}',
+                              icon: Icons.account_balance,
+                            ),
+                            _OverviewCard(
+                              title: 'Top Category',
+                              value: topCategory,
+                              icon: Icons.star,
+                            ),
+                          ],
+                        ).animate().fadeIn(),
+
+                        const SizedBox(height: 28),
+
+                        Text(
+                          'Spending Trend',
+                          style: theme.textTheme.titleLarge,
                         ),
-                      );
-                    },
-                    icon: Icon(
-                      Icons.add,
-                      color: Theme.of(context).colorScheme.onPrimary,
-                    ),
-                    label: Text(
-                      isAr ? 'إنشاء تقرير جديد' : 'Generate New Report',
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 32,
-                        vertical: 16,
-                      ),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
+
+                        const SizedBox(height: 16),
+
+                        // Spending Trend Chart
+                        Container(
+                          height: 250,
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          child: _buildLineChart(
+                            filteredExpenses,
+                            colorScheme,
+                            theme,
+                          ),
+                        ).animate().fadeIn(delay: 200.ms),
+
+                        const SizedBox(height: 28),
+
+                        Text(
+                          'Category Breakdown',
+                          style: theme.textTheme.titleLarge,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(28),
+                          ),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 220,
+                                child: PieChart(
+                                  PieChartData(
+                                    sections: _buildPieSections(
+                                      categoryTotals,
+                                      colorScheme,
+                                    ),
+                                    sectionsSpace: 2,
+                                    centerSpaceRadius: 40,
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              ...categoryTotals.entries.map(
+                                (e) => Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 6,
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Container(
+                                        width: 14,
+                                        height: 14,
+                                        decoration: BoxDecoration(
+                                          color: _getCategoryColor(e.key),
+                                          borderRadius: BorderRadius.circular(
+                                            4,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(child: Text(e.key)),
+                                      Text('\$${e.value.toStringAsFixed(0)}'),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ).animate().fadeIn(delay: 400.ms),
+
+                        const SizedBox(height: 28),
+
+                        BlocBuilder<BudgetBloc, BudgetState>(
+                          builder: (context, budgetState) {
+                            if (budgetState is! BudgetLoaded) {
+                              return const SizedBox();
+                            }
+
+                            final budgets = budgetState.budgets;
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Budget Progress',
+                                  style: theme.textTheme.titleLarge,
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                ...budgets.map((budget) {
+                                  final spent = categoryTotals[budget.id] ?? 0;
+
+                                  final progress = (spent / budget.amount)
+                                      .clamp(0.0, 1.0);
+
+                                  return Container(
+                                    margin: const EdgeInsets.only(bottom: 16),
+                                    padding: const EdgeInsets.all(18),
+                                    decoration: BoxDecoration(
+                                      color:
+                                          colorScheme.surfaceContainerHighest,
+                                      borderRadius: BorderRadius.circular(24),
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: Text(
+                                                budget.id,
+                                                style:
+                                                    theme.textTheme.titleMedium,
+                                              ),
+                                            ),
+                                            Text(
+                                              '\$${spent.toStringAsFixed(0)} / \$${budget.amount.toStringAsFixed(0)}',
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 12),
+                                        LinearProgressIndicator(
+                                          value: progress,
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }),
+                              ],
+                            );
+                          },
+                        ),
+
+                        const SizedBox(height: 28),
+
+                        Text(
+                          'Smart Insights',
+                          style: theme.textTheme.titleLarge,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        _InsightCard(
+                          text:
+                              '$topCategory is your biggest spending category.',
+                          colorScheme: colorScheme,
+                        ),
+
+                        _InsightCard(
+                          text: balance >= 0
+                              ? 'You are saving money this period.'
+                              : 'Your expenses exceed your income.',
+                          colorScheme: colorScheme,
+                        ),
+
+                        _InsightCard(
+                          text:
+                              'You spent \$${totalExpenses.toStringAsFixed(0)} during this period.',
+                          colorScheme: colorScheme,
+                        ),
+
+                        const SizedBox(height: 120),
+                      ],
                     ),
                   ),
                 ),
-                const SizedBox(height: 100),
               ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildFilters() {
+    return Row(
+      children: AnalyticsRange.values.map((range) {
+        final selected = selectedRange == range;
+
+        return Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: ChoiceChip(
+            label: Text(range.name.toUpperCase()),
+            selected: selected,
+            onSelected: (_) {
+              setState(() {
+                selectedRange = range;
+              });
+            },
+          ),
+        );
+      }).toList(),
+    );
+  }
+
+  List<dynamic> _filterExpenses(List<dynamic> expenses) {
+    final now = DateTime.now();
+
+    return expenses.where((expense) {
+      switch (selectedRange) {
+        case AnalyticsRange.week:
+          return expense.date.isAfter(now.subtract(const Duration(days: 7)));
+
+        case AnalyticsRange.month:
+          return expense.date.month == now.month &&
+              expense.date.year == now.year;
+
+        case AnalyticsRange.year:
+          return expense.date.year == now.year;
+      }
+    }).toList();
+  }
+
+  Map<String, double> _calculateCategoryTotals(List<dynamic> expenses) {
+    final Map<String, double> totals = {};
+
+    for (final expense in expenses) {
+      if (expense.type != 'expense') {
+        continue;
+      }
+
+      totals.update(
+        expense.category,
+        (value) => value + expense.amount,
+        ifAbsent: () => expense.amount,
+      );
+    }
+
+    return totals;
+  }
+
+  Widget _buildLineChart(
+    List<dynamic> expenses,
+    ColorScheme colorScheme,
+    ThemeData theme,
+  ) {
+    // Group expenses by date
+    final grouped = <String, double>{};
+
+    for (final expense in expenses) {
+      if (expense.type != 'expense') {
+        continue;
+      }
+
+      final key = DateFormat('dd/MM').format(expense.date);
+
+      grouped.update(
+        key,
+        (value) => value + expense.amount,
+        ifAbsent: () => expense.amount,
+      );
+    }
+
+    if (grouped.isEmpty) {
+      return Center(
+        child: Text(
+          'No expense data for this period',
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      );
+    }
+
+    // Sort dates and create spots
+    final sortedKeys = grouped.entries.toList();
+    // Build a list of all days in the selected range for proper x-axis
+    final spots = sortedKeys.asMap().entries.map((e) {
+      return FlSpot(e.key.toDouble(), e.value.value);
+    }).toList();
+
+    // Build bottom labels: show every Nth label to avoid overlap
+    final maxLabels = spots.length > 10 ? 5 : spots.length;
+    final step = spots.length > maxLabels
+        ? (spots.length / maxLabels).ceil()
+        : 1;
+
+    return LineChart(
+      LineChartData(
+        gridData: FlGridData(
+          show: true,
+          drawVerticalLine: false,
+          horizontalInterval: _calculateInterval(grouped.values),
+          getDrawingHorizontalLine: (value) {
+            return FlLine(
+              color: colorScheme.outlineVariant.withValues(alpha: 0.5),
+              strokeWidth: 1,
+            );
+          },
+        ),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          topTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          rightTitles: const AxisTitles(
+            sideTitles: SideTitles(showTitles: false),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 30,
+              interval: step.toDouble(),
+              getTitlesWidget: (value, meta) {
+                final index = value.toInt();
+                if (index < 0 || index >= sortedKeys.length) {
+                  return const SizedBox.shrink();
+                }
+                // Only show every Nth label
+                if (index % step != 0) {
+                  return const SizedBox.shrink();
+                }
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    sortedKeys[index].key,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 50,
+              getTitlesWidget: (value, meta) {
+                if (value == 0) {
+                  return const SizedBox.shrink();
+                }
+                return Text(
+                  '\$${value.toInt()}',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        lineBarsData: [
+          LineChartBarData(
+            isCurved: false,
+            preventCurveOverShooting: true,
+            spots: spots,
+            barWidth: 3,
+            color: colorScheme.primary,
+            dotData: const FlDotData(show: false),
+            belowBarData: BarAreaData(
+              show: true,
+              color: colorScheme.primary.withValues(alpha: 0.15),
+            ),
+          ),
+        ],
+        lineTouchData: LineTouchData(
+          touchTooltipData: LineTouchTooltipData(
+            getTooltipItems: (touchedSpots) {
+              return touchedSpots.map((spot) {
+                final index = spot.spotIndex;
+                final label = index < sortedKeys.length
+                    ? sortedKeys[index].key
+                    : '';
+                return LineTooltipItem(
+                  '$label\n\$${spot.y.toStringAsFixed(0)}',
+                  TextStyle(
+                    color: colorScheme.onInverseSurface,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
+                );
+              }).toList();
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  double _calculateInterval(Iterable<double> values) {
+    if (values.isEmpty) return 100;
+    final maxVal = values.reduce((a, b) => a > b ? a : b);
+    if (maxVal <= 0) return 100;
+    // Aim for ~4 horizontal grid lines
+    final interval = (maxVal / 4).ceilToDouble();
+    return interval < 10 ? 10 : interval;
+  }
+
+  List<PieChartSectionData> _buildPieSections(
+    Map<String, double> categoryTotals,
+    ColorScheme colorScheme,
+  ) {
+    return categoryTotals.entries.map((entry) {
+      return PieChartSectionData(
+        value: entry.value,
+        title: '\$${entry.value.toStringAsFixed(0)}',
+        radius: 90,
+        color: _getCategoryColor(entry.key),
+      );
+    }).toList();
+  }
+
+  Color _getCategoryColor(String category) {
+    switch (category.toLowerCase()) {
+      case 'food':
+        return Colors.orange;
+
+      case 'shopping':
+        return Colors.purple;
+
+      case 'transport':
+        return Colors.blue;
+
+      case 'health':
+        return Colors.red;
+
+      case 'entertainment':
+        return Colors.green;
+
+      default:
+        return Colors.teal;
+    }
+  }
+}
+
+class _OverviewCard extends StatelessWidget {
+  final String title;
+  final String value;
+  final IconData icon;
+
+  const _OverviewCard({
+    required this.title,
+    required this.value,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(28),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Icon(icon),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                value,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(title),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InsightCard extends StatelessWidget {
+  final String text;
+  final ColorScheme colorScheme;
+
+  const _InsightCard({required this.text, required this.colorScheme});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.only(bottom: 14),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: colorScheme.primaryContainer,
+        borderRadius: BorderRadius.circular(24),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.lightbulb_outline, color: colorScheme.onPrimaryContainer),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(color: colorScheme.onPrimaryContainer),
+            ),
+          ),
+        ],
       ),
     );
   }

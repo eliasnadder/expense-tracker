@@ -16,6 +16,8 @@ import 'package:expense_tracker/features/budget/presentation/bloc/budget_bloc.da
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_event.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
+import 'package:expense_tracker/features/categories/presentation/bloc/category_bloc.dart';
+import 'package:expense_tracker/features/categories/presentation/bloc/category_event.dart';
 import 'package:expense_tracker/features/categories/presentation/screens/categories_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -53,12 +55,14 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(create: (_) => getIt<ExpenseBloc>()),
         BlocProvider(create: (_) => getIt<BudgetBloc>()),
+        BlocProvider(create: (_) => getIt<CategoryBloc>()),
       ],
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthAuthenticated) {
             context.read<ExpenseBloc>().add(LoadExpenses(state.user.id));
             context.read<BudgetBloc>().add(LoadBudgets(state.user.id));
+            context.read<CategoryBloc>().add(LoadCategories(state.user.id));
           }
         },
         child: BlocBuilder<ThemeCubit, ThemeMode>(

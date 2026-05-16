@@ -1,6 +1,7 @@
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/login_screen.dart';
+import 'package:expense_tracker/features/categories/presentation/screens/setup_categories_screen.dart';
 import 'package:expense_tracker/features/expenses/presentation/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,6 +14,10 @@ class AuthWrapper extends StatelessWidget {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthAuthenticated) {
+          // If user hasn't completed setup, redirect to setup screen
+          if (!state.user.isSetupComplete) {
+            return SetupCategoriesScreen(userId: state.user.id);
+          }
           return HomeScreen(user: state.user);
         }
         if (state is AuthLoading || state is AuthInitial) {

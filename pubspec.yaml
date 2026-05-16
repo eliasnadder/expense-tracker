@@ -37,6 +37,7 @@ dependencies:
   fl_chart: ^1.2.0
   flutter:
     sdk: flutter
+  flutter_animate: ^4.5.2
   flutter_bloc: ^9.1.1
   flutter_floating_bottom_bar: ^2.0.0
   flutter_gen: ^5.14.1

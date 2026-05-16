@@ -8,6 +8,9 @@ import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/budget/data/repositories/budget_repository_impl.dart';
 import 'package:expense_tracker/features/budget/domain/repositories/budget_repository.dart';
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_bloc.dart';
+import 'package:expense_tracker/features/categories/data/repositories/category_repository_imp.dart';
+import 'package:expense_tracker/features/categories/domain/repositories/category_repository.dart';
+import 'package:expense_tracker/features/categories/presentation/bloc/category_bloc.dart';
 import 'package:expense_tracker/features/expenses/data/repositories/expense_repository_impl.dart';
 import 'package:expense_tracker/features/expenses/domain/repositories/expense_repository.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
@@ -32,6 +35,10 @@ void setupDependencies() {
     ),
   );
 
+  getIt.registerLazySingleton<CategoryRepository>(
+    () => CategoryRepositoryImp(firestore: getIt()),
+  );
+
   // Expense Repository
   getIt.registerLazySingleton<ExpenseRepository>(
     () => ExpenseRepositoryImpl(firestore: getIt()),
@@ -49,4 +56,5 @@ void setupDependencies() {
   getIt.registerFactory(() => ExpenseBloc(expenseRepository: getIt()));
   getIt.registerFactory(() => BudgetBloc(budgetRepository: getIt()));
   getIt.registerFactory(() => AiBloc(geminiService: getIt()));
+  getIt.registerFactory(() => CategoryBloc(getIt()));
 }

@@ -27,3 +27,10 @@ class EmailSignUpRequested extends AuthEvent {
   @override
   List<Object?> get props => [email, password, displayName];
 }
+
+class SetupCompleted extends AuthEvent {
+  final String userId;
+  SetupCompleted(this.userId);
+  @override
+  List<Object?> get props => [userId];
+}
