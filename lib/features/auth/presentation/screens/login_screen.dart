@@ -1,10 +1,8 @@
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
-import 'package:expense_tracker/features/auth/presentation/screens/register_screen.dart';
+import 'package:expense_tracker/features/auth/presentation/widgets/google_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,21 +12,9 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  bool _obscurePassword = true;
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
   @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
-  }
-
-  void _showUnavailable(String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -51,238 +37,65 @@ class _LoginScreenState extends State<LoginScreen> {
           }
         },
         child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 48),
-            child: Column(
-              children: [
-                const SizedBox(height: 24),
-                // Logo Icon
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(18),
-                  child: Image.asset(
-                    'assets/logo/logo.png',
-                    width: 72,
-                    height: 72,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                const SizedBox(height: 24),
+          child: Center(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(height: 40),
 
-                // Title
-                Text(
-                  'Welcome Back',
-                  style: theme.brightness == Brightness.light
-                      ? textTheme.headlineLarge?.copyWith(fontSize: 28)
-                      : textTheme.headlineLarge?.copyWith(
-                          fontSize: 28,
-                          color: Colors.white,
-                        ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Sign in to your financial hub',
-                  style: textTheme.bodyLarge,
-                ),
-                const SizedBox(height: 40),
-
-                // Email Field
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(
-                    labelText: 'Email',
-                    hintText: 'name@example.com',
-                    prefixIcon: Icon(Icons.mail_outline),
-                  ),
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 16),
-
-                // Password Field
-                TextField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  decoration: InputDecoration(
-                    labelText: 'Password',
-                    hintText: '••••••••',
-                    prefixIcon: const Icon(Icons.lock_outline),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
-                      ),
-                      onPressed: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
+                  // Logo
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(24),
+                    child: Image.asset(
+                      'assets/logo/logo.png',
+                      width: 96,
+                      height: 96,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const Icon(Icons.account_balance_wallet, size: 96),
                     ),
                   ),
-                ),
+                  const SizedBox(height: 32),
 
-                // Forgot Password
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: () => _showUnavailable(
-                      'Password reset is not available yet.',
+                  // Headline
+                  Text(
+                    'Welcome Back',
+                    style: textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
                     ),
-                    child: Text(
-                      'Forgot Password?',
-                      style: textTheme.labelLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.primary,
-                      ),
-                    ),
+                    textAlign: TextAlign.center,
                   ),
-                ),
-                const SizedBox(height: 24),
+                  const SizedBox(height: 12),
 
-                // Primary Actions
-                BlocBuilder<AuthBloc, AuthState>(
-                  builder: (context, state) {
-                    if (state is AuthLoading) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
-                    return Column(
-                      children: [
-                        SizedBox(
-                          width: double.infinity,
-                          child: FilledButton(
-                            onPressed: () {
-                              final email = _emailController.text.trim();
-                              final password = _passwordController.text;
-                              if (email.isNotEmpty && password.isNotEmpty) {
-                                context.read<AuthBloc>().add(
-                                  EmailSignInRequested(email, password),
-                                );
-                              }
-                            },
-                            child: const Text('Sign In'),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: TextButton(
-                            onPressed: () => _showUnavailable(
-                              'Guest mode is not available yet.',
-                            ),
-                            style: TextButton.styleFrom(
-                              minimumSize: const Size(double.infinity, 48),
-                              foregroundColor: Theme.of(context).colorScheme.primary,
-                            ),
-                            child: const Text('Continue as Guest'),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 32),
-                // Divider
-                const _Divider(),
-                const SizedBox(height: 32),
-
-                // Social Login
-                _SocialButton(
-                  label: 'Continue with Google',
-                  icon: SvgPicture.asset('assets/icons/google.svg', height: 20),
-                  onTap: () =>
-                      context.read<AuthBloc>().add(GoogleSignInRequested()),
-                ),
-                const SizedBox(height: 12),
-                _SocialButton(
-                  label: 'Continue with Apple',
-                  icon: const Icon(Icons.apple, size: 24, color: Colors.black),
-                  onTap: () =>
-                      _showUnavailable('Apple sign-in is not available yet.'),
-                ),
-                const SizedBox(height: 32),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account?"),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const RegisterScreen(),
-                        ),
-                      ),
-                      child: const Text(
-                        'Sign Up',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                  Text(
+                    'Sign in to manage your finances',
+                    style: textTheme.bodyLarge?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                  ],
-                ),
-              ],
+                    textAlign: TextAlign.center,
+                  ),
+
+                  // Replaced Spacer(flex: 2) with fixed height
+                  const SizedBox(height: 60),
+
+                  // Google Sign In Button
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      final isLoading = state is AuthLoading;
+
+                      return GoogleSignInButton(isLoading: isLoading);
+                    },
+                  ),
+                  const SizedBox(height: 60),
+                ],
+              ),
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _Divider extends StatelessWidget {
-  const _Divider();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            'or',
-            style: Theme.of(
-              context,
-            ).textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
-          ),
-        ),
-        Expanded(child: Divider(color: Theme.of(context).colorScheme.outlineVariant)),
-      ],
-    );
-  }
-}
-
-class _SocialButton extends StatelessWidget {
-  final String label;
-  final Widget icon;
-  final VoidCallback onTap;
-
-  const _SocialButton({
-    required this.label,
-    required this.icon,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: double.infinity,
-      height: 48,
-      child: OutlinedButton(
-        onPressed: onTap,
-        style: OutlinedButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(100),
-          ),
-          side: BorderSide(color: Theme.of(context).colorScheme.outline),
-          foregroundColor: Theme.of(context).colorScheme.onSurface,
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stack(alignment: Alignment.center, children: [icon]),
-            const SizedBox(width: 12),
-            Text(
-              label,
-              style: Theme.of(
-                context,
-              ).textTheme.labelLarge?.copyWith(color: Theme.of(context).colorScheme.onSurface),
-            ),
-          ],
         ),
       ),
     );
