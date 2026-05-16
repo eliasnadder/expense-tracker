@@ -79,3 +79,5 @@ shorebird.yaml
 *.log
 .history
 migrate_working_dir/
+
+.metadata
