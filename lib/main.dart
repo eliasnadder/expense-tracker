@@ -9,14 +9,13 @@ import 'package:expense_tracker/features/auth/presentation/screens/auth_wrapper.
 import 'package:expense_tracker/features/auth/presentation/screens/splash_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/login_screen.dart';
-import 'package:expense_tracker/features/auth/presentation/screens/register_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/profile_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/settings_screen.dart';
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_bloc.dart';
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_event.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
-import 'package:expense_tracker/features/expenses/presentation/screens/categories_screen.dart';
+import 'package:expense_tracker/features/categories/presentation/screens/categories_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -24,6 +23,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:expense_tracker/l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
+import 'package:expense_tracker/app_guard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,35 +61,35 @@ class MyApp extends StatelessWidget {
             context.read<BudgetBloc>().add(LoadBudgets(state.user.id));
           }
         },
-        // BlocBuilder on ThemeCubit so the whole app rebuilds on theme change
-        child: BlocBuilder<ThemeCubit, ThemeMode>(
-          builder: (context, themeMode) {
-            return MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: 'Expense Tracker',
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: themeMode,
-              localizationsDelegates: const [
-                AppLocalizations.delegate,
-                GlobalMaterialLocalizations.delegate,
-                GlobalWidgetsLocalizations.delegate,
-                GlobalCupertinoLocalizations.delegate,
-              ],
-              supportedLocales: const [Locale('en'), Locale('ar')],
-              initialRoute: '/',
-              routes: {
-                '/': (context) => const SplashScreen(),
-                '/auth': (context) => const AuthWrapper(),
-                '/onboarding': (context) => const OnboardingScreen(),
-                '/login': (context) => const LoginScreen(),
-                '/register': (context) => const RegisterScreen(),
-                '/profile': (context) => const ProfileScreen(),
-                '/settings': (context) => const SettingsScreen(),
-                '/categories': (context) => const CategoriesScreen(),
-              },
-            );
-          },
+        child: AppGuard(
+          child: BlocBuilder<ThemeCubit, ThemeMode>(
+            builder: (context, themeMode) {
+              return MaterialApp(
+                debugShowCheckedModeBanner: false,
+                title: 'Expense Tracker',
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                themeMode: themeMode,
+                localizationsDelegates: const [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                supportedLocales: const [Locale('en'), Locale('ar')],
+                initialRoute: '/',
+                routes: {
+                  '/': (context) => const SplashScreen(),
+                  '/auth': (context) => const AuthWrapper(),
+                  '/onboarding': (context) => const OnboardingScreen(),
+                  '/login': (context) => const LoginScreen(),
+                  '/profile': (context) => const ProfileScreen(),
+                  '/settings': (context) => const SettingsScreen(),
+                  '/categories': (context) => const CategoriesScreen(),
+                },
+              );
+            },
+          ),
         ),
       ),
     );
