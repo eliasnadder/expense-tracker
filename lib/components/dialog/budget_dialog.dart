@@ -94,7 +94,7 @@ class _SetBudgetDialogState extends State<SetBudgetDialog> {
                 decoration: InputDecoration(
                   hintText: widget.isAr ? 'المبلغ الشهري' : 'Monthly Amount',
                   border: InputBorder.none,
-                  fillColor: Colors.transparent,
+                  fillColor: Theme.of(context).colorScheme.surface.withValues(alpha: 0),
                   focusedBorder: InputBorder.none,
                   enabledBorder: InputBorder.none,
                 ),

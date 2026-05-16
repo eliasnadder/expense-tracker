@@ -70,7 +70,7 @@ class _HeaderCard extends StatelessWidget {
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [const Color(0xFF6C63FF), const Color(0xFF03DAC6)],
+          colors: [theme.colorScheme.primary, theme.colorScheme.tertiary],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
@@ -83,8 +83,8 @@ class _HeaderCard extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             isAr ? 'مستشارك المالي الذكي' : 'Your Smart Financial Advisor',
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: theme.colorScheme.onPrimary,
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -94,7 +94,10 @@ class _HeaderCard extends StatelessWidget {
             isAr
                 ? 'يحلل Gemini مصاريفك ويقترح أفضل الطرق للتوفير'
                 : 'Gemini analyzes your expenses and suggests smart saving tips',
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
+            style: TextStyle(
+              color: theme.colorScheme.onPrimary.withValues(alpha: 0.7),
+              fontSize: 13,
+            ),
           ),
         ],
       ),
@@ -227,19 +230,22 @@ class _ErrorWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: Colors.red.shade50,
+      color: Theme.of(context).colorScheme.errorContainer,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            const Icon(Icons.error_outline, color: Colors.red),
+            Icon(
+              Icons.error_outline,
+              color: Theme.of(context).colorScheme.error,
+            ),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
                 isAr
                     ? 'حدث خطأ، تحقق من اتصالك وحاول مجدداً'
                     : 'Error occurred, check connection and retry',
-                style: const TextStyle(color: Colors.red),
+                style: TextStyle(color: Theme.of(context).colorScheme.onError),
               ),
             ),
           ],

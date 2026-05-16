@@ -107,7 +107,7 @@ class _SplashScreenState extends State<SplashScreen>
                     width: 192,
                     height: 4,
                     decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceVariant,
+                      color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(100),
                     ),
                     child: FractionallySizedBox(

@@ -1,4 +1,3 @@
-import 'package:expense_tracker/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatefulWidget {
@@ -227,8 +226,11 @@ class _OnboardingPage extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: colors.secondaryContainer,
                       shape: BoxShape.circle,
-                      boxShadow: const [
-                        BoxShadow(color: Colors.black12, blurRadius: 10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: colors.shadow.withValues(alpha: 0.12),
+                          blurRadius: 10,
+                        ),
                       ],
                     ),
                     child: Icon(
@@ -248,8 +250,11 @@ class _OnboardingPage extends StatelessWidget {
                       decoration: BoxDecoration(
                         color: colors.tertiaryContainer,
                         borderRadius: BorderRadius.circular(16),
-                        boxShadow: const [
-                          BoxShadow(color: Colors.black12, blurRadius: 10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: colors.shadow.withValues(alpha: 0.12),
+                            blurRadius: 10,
+                          ),
                         ],
                       ),
                       child: Icon(

@@ -1,6 +1,5 @@
 import 'package:expense_tracker/features/analytics/presentation/widgets/ai_insight_panel.dart';
 import 'package:expense_tracker/features/analytics/presentation/widgets/report_item.dart';
-import 'package:expense_tracker/features/analytics/presentation/widgets/saving_card.dart';
 import 'package:expense_tracker/features/analytics/presentation/widgets/summary_card.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
@@ -37,7 +36,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
 
           final totalIncome = state.totalIncome;
           final totalExpenses = state.totalExpenses;
-          final netSavings = totalIncome - totalExpenses;
+          // final netSavings = totalIncome - totalExpenses;
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(20),

@@ -1,4 +1,5 @@
 import 'package:expense_tracker/core/theme/app_theme.dart';
+import 'package:expense_tracker/core/service/biometric_service.dart';
 import 'package:expense_tracker/core/theme/theme_cubit.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
@@ -20,6 +21,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   String _currency = 'USD';
   String _language = 'English';
 
+  @override
+  void initState() {
+    super.initState();
+    _loadSettings();
+  }
+
   void _showSaved() {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Settings saved on this device.')),
@@ -31,7 +38,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     final textTheme = Theme.of(context).textTheme;
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
-    // Read current theme mode from the cubit to keep the picker in sync
     final currentThemeMode = context.watch<ThemeCubit>().state;
     final currentThemeLabel = ThemeCubit.toLabel(currentThemeMode);
 
@@ -45,7 +51,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
-          // final user = state is AuthAuthenticated ? state.user : null;
           return ListView(
             padding: const EdgeInsets.fromLTRB(20, 12, 20, 32),
             children: [
@@ -75,7 +80,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       onChanged: (v) => setState(() => _language = v),
                     ),
                   ),
-                  // ── Appearance (Dark mode) ────────────────────────────────
                   _OptionTile(
                     icon: _themeIcon(currentThemeMode),
                     title: isAr ? 'المظهر' : 'Appearance',
@@ -85,7 +89,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       values: const ['System', 'Light', 'Dark'],
                       current: currentThemeLabel,
                       onChanged: (label) {
-                        // Actually apply the theme via ThemeCubit
                         context.read<ThemeCubit>().setTheme(label);
                       },
                     ),
@@ -131,7 +134,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ? 'اطلب التحقق عند فتح التطبيق'
                         : 'Require verification on app open',
                     value: _biometricLock,
-                    onChanged: (v) => setState(() => _biometricLock = v),
+                    // CHANGED: Use the handler instead of setState directly
+                    onChanged: _handleBiometricToggle,
                   ),
                   _OptionTile(
                     icon: Icons.logout,
@@ -209,6 +213,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
 
     if (selected != null) onChanged(selected);
+  }
+
+  Future<void> _loadSettings() async {
+    final isEnabled = await BiometricService.isBiometricEnabled();
+    if (mounted) setState(() => _biometricLock = isEnabled);
+  }
+
+  Future<void> _handleBiometricToggle(bool value) async {
+    if (value) {
+      final isSupported = await BiometricService.canCheckBiometrics();
+      if (!isSupported) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Biometrics not available on this device'),
+            ),
+          );
+          setState(() => _biometricLock = false);
+        }
+        return;
+      }
+
+      final authenticated = await BiometricService.authenticate();
+      if (authenticated) {
+        await BiometricService.setBiometricEnabled(true);
+        if (mounted) setState(() => _biometricLock = true);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Authentication failed. Feature not enabled.'),
+            ),
+          );
+          setState(() => _biometricLock = false);
+        }
+      }
+    } else {
+      await BiometricService.setBiometricEnabled(false);
+      if (mounted) setState(() => _biometricLock = false);
+    }
   }
 }
 
@@ -307,7 +351,7 @@ class _SwitchTile extends StatelessWidget {
       title: Text(title),
       subtitle: Text(subtitle),
       value: value,
-      activeColor: cs.primary,
+      activeThumbColor: cs.primary,
       onChanged: onChanged,
     );
   }
