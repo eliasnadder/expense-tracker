@@ -6,6 +6,7 @@ import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_state.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/auth_wrapper.dart';
+import 'package:expense_tracker/features/auth/presentation/screens/biometric_gate_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/splash_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/onboarding_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/login_screen.dart';
@@ -23,7 +24,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:expense_tracker/l10n/app_localizations.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'firebase_options.dart';
-import 'package:expense_tracker/app_guard.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,35 +61,34 @@ class MyApp extends StatelessWidget {
             context.read<BudgetBloc>().add(LoadBudgets(state.user.id));
           }
         },
-        child: AppGuard(
-          child: BlocBuilder<ThemeCubit, ThemeMode>(
-            builder: (context, themeMode) {
-              return MaterialApp(
-                debugShowCheckedModeBanner: false,
-                title: 'Expense Tracker',
-                theme: AppTheme.lightTheme,
-                darkTheme: AppTheme.darkTheme,
-                themeMode: themeMode,
-                localizationsDelegates: const [
-                  AppLocalizations.delegate,
-                  GlobalMaterialLocalizations.delegate,
-                  GlobalWidgetsLocalizations.delegate,
-                  GlobalCupertinoLocalizations.delegate,
-                ],
-                supportedLocales: const [Locale('en'), Locale('ar')],
-                initialRoute: '/',
-                routes: {
-                  '/': (context) => const SplashScreen(),
-                  '/auth': (context) => const AuthWrapper(),
-                  '/onboarding': (context) => const OnboardingScreen(),
-                  '/login': (context) => const LoginScreen(),
-                  '/profile': (context) => const ProfileScreen(),
-                  '/settings': (context) => const SettingsScreen(),
-                  '/categories': (context) => const CategoriesScreen(),
-                },
-              );
-            },
-          ),
+        child: BlocBuilder<ThemeCubit, ThemeMode>(
+          builder: (context, themeMode) {
+            return MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Expense Tracker',
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: themeMode,
+              localizationsDelegates: const [
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: const [Locale('en'), Locale('ar')],
+              initialRoute: '/',
+              routes: {
+                '/': (context) => const SplashScreen(),
+                '/biometric-gate': (context) => const BiometricGateScreen(),
+                '/auth': (context) => const AuthWrapper(),
+                '/onboarding': (context) => const OnboardingScreen(),
+                '/login': (context) => const LoginScreen(),
+                '/profile': (context) => const ProfileScreen(),
+                '/settings': (context) => const SettingsScreen(),
+                '/categories': (context) => const CategoriesScreen(),
+              },
+            );
+          },
         ),
       ),
     );

@@ -1,4 +1,4 @@
-import 'package:expense_tracker/components/dialog/budget_dialog.dart';
+import 'package:expense_tracker/features/budget/presentation/widgets/budget_dialog.dart';
 import 'package:expense_tracker/core/di/injection.dart';
 import 'package:expense_tracker/core/service/notification_service.dart';
 import 'package:expense_tracker/features/budget/presentation/bloc/budget_bloc.dart';
