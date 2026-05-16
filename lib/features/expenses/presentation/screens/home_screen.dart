@@ -1,8 +1,5 @@
-import 'package:expense_tracker/core/constants/expense_categories.dart';
 import 'package:expense_tracker/core/di/injection.dart';
-import 'package:expense_tracker/core/theme/app_theme.dart';
-import 'package:expense_tracker/utilities/icon_helper.dart';
-
+import 'package:expense_tracker/features/categories/presentation/widgets/category_section.dart';
 import 'package:expense_tracker/features/ai_insight/presentation/bloc/ai_bloc.dart';
 import 'package:expense_tracker/features/analytics/presentation/screens/analytics_screen.dart';
 import 'package:expense_tracker/features/auth/domain/entities/user_entity.dart';
@@ -17,9 +14,12 @@ import 'package:expense_tracker/features/expenses/presentation/widgets/expense_c
 import 'package:expense_tracker/features/budget/presentation/screens/budgets_screen.dart';
 import 'package:expense_tracker/features/expenses/presentation/screens/timeline_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/profile_screen.dart';
-import 'package:expense_tracker/features/expenses/presentation/screens/categories_screen.dart';
+import 'package:expense_tracker/features/categories/presentation/screens/categories_screen.dart';
+import 'package:expense_tracker/features/expenses/presentation/widgets/no_expnese.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class HomeScreen extends StatelessWidget {
   final UserEntity user;
@@ -56,116 +56,144 @@ class _HomeBodyState extends State<_HomeBody> {
             ? _recentExpenses(expenseState.expenses)
             : <ExpenseEntity>[];
 
-        return SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (expenseState is ExpenseLoaded)
-                const Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8),
-                  child: Text(
-                    'Monthly Budget',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                ),
+        final scrollPhysics = recentExpenses.isEmpty
+            ? const NeverScrollableScrollPhysics()
+            : const BouncingScrollPhysics();
 
-              BlocBuilder<BudgetBloc, BudgetState>(
-                builder: (context, budgetState) {
-                  final totalLimit = budgetState is BudgetLoaded
-                      ? budgetState.monthlyBudgetLimit
-                      : 0.0;
-                  return BudgetCard(
-                    budget: totalLimit,
-                    spent: spent,
-                    isAr: isAr,
-                    userId: widget.user.id,
-                    isBudgetScreen: false,
-                  );
-                },
-              ),
-              SizedBox(height: 16),
-              // Category Chips
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      isAr ? 'الفئات' : 'Categories',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CategoriesScreen(),
-                        ),
-                      ),
-                      child: Text(isAr ? 'إدارة' : 'Manage'),
-                    ),
-                  ],
-                ),
-              ),
-              _CategorySection(
-                isAr: isAr,
-                selectedCategory: _selectedCategory,
-                onSelected: (category) =>
-                    setState(() => _selectedCategory = category),
-              ),
-              SizedBox(height: 16),
-
-              if (expenseState is ExpenseLoading)
-                const Center(child: CircularProgressIndicator())
-              else if (expenseState is ExpenseLoaded &&
-                  recentExpenses.isNotEmpty)
-                Column(
-                  children: [
+        return CustomScrollView(
+          physics: scrollPhysics, 
+          slivers: [
+            SliverToBoxAdapter(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (expenseState is ExpenseLoaded)
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            isAr ? 'المعاملات الأخيرة' : 'Recent Transactions',
-                            style: const TextStyle(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 8,
+                      ),
+                      child: Text(
+                        'Monthly Budget',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _NavShellState.of(context)?.goToTab(1);
-                            },
-                            child: Text(isAr ? 'رؤية الكل' : 'See All'),
-                          ),
-                        ],
                       ),
                     ),
-                  ],
+                  BlocBuilder<BudgetBloc, BudgetState>(
+                    builder: (context, budgetState) {
+                      final totalLimit = budgetState is BudgetLoaded
+                          ? budgetState.monthlyBudgetLimit
+                          : 0.0;
+                      return BudgetCard(
+                        budget: totalLimit,
+                        spent: spent,
+                        isAr: isAr,
+                        userId: widget.user.id,
+                        isBudgetScreen: false,
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          isAr ? 'الفئات' : 'Categories',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Theme.of(context).colorScheme.onSurface,
+                              ),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const CategoriesScreen(),
+                            ),
+                          ),
+                          child: Text(isAr ? 'إدارة' : 'Manage'),
+                        ),
+                      ],
+                    ),
+                  ),
+                  CategorySection(
+                    isAr: isAr,
+                    selectedCategory: _selectedCategory,
+                    onSelected: (category) =>
+                        setState(() => _selectedCategory = category),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            ),
+            if (expenseState is ExpenseLoading)
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: LoadingAnimationWidget.inkDrop(
+                    color: Theme.of(context).colorScheme.primary,
+                    size: 20,
+                  ),
                 ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: recentExpenses.length,
-                itemBuilder: (context, index) {
+              )
+            else if (expenseState is ExpenseLoaded && recentExpenses.isEmpty)
+              NoExpense(
+                isAr: isAr,
+                userId: widget.user.id,
+                mainAxisAlignment: MainAxisAlignment.start,
+              )
+            else if (expenseState is ExpenseLoaded && recentExpenses.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        isAr ? 'المعاملات الأخيرة' : 'Recent Transactions',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.onSurface,
+                            ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          _NavShellState.of(context)?.goToTab(1);
+                        },
+                        child: Text(isAr ? 'رؤية الكل' : 'See All'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            SliverPadding(
+              padding: const EdgeInsets.only(
+                bottom: 120,
+              ), // Padding for scrolling past FAB/Bar
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate((context, index) {
                   final expense = recentExpenses[index];
                   return Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 14.0,
-                      vertical: 4.0,
-                    ),
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: ExpenseCard(
                       expense: expense,
                       userId: widget.user.id,
                     ),
                   );
-                },
+                }, childCount: recentExpenses.length),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
@@ -178,67 +206,6 @@ class _HomeBodyState extends State<_HomeBody> {
               .where((expense) => expense.category == _selectedCategory)
               .toList();
     return filtered.take(5).toList();
-  }
-}
-
-class _CategorySection extends StatelessWidget {
-  final bool isAr;
-  final String selectedCategory;
-  final ValueChanged<String> onSelected;
-
-  const _CategorySection({
-    required this.isAr,
-    required this.selectedCategory,
-    required this.onSelected,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final categories = [
-      {'id': 'All', 'name': isAr ? 'الكل' : 'All', 'icon': Icons.grid_view},
-      ...kCategories
-          .take(6)
-          .map(
-            (c) => {
-              'id': c.name,
-              'name': isAr ? c.nameAr : c.name,
-              'icon': getIconForCategory(c.name),
-            },
-          ),
-    ];
-
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Row(
-        children: categories.map((cat) {
-          final id = cat['id'] as String;
-          final isSelected = id == selectedCategory;
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              selected: isSelected,
-              onSelected: (_) => onSelected(id),
-              label: Text(cat['name'] as String),
-              avatar: Icon(cat['icon'] as IconData, size: 16),
-              backgroundColor: Theme.of(
-                context,
-              ).colorScheme.surfaceContainerLowest,
-              selectedColor: Theme.of(context).colorScheme.primaryContainer,
-              labelStyle: TextStyle(
-                color: isSelected
-                    ? Theme.of(context).colorScheme.onSecondaryContainer
-                    : Theme.of(context).colorScheme.onSurface,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          );
-        }).toList(),
-      ),
-    );
   }
 }
 
@@ -276,40 +243,49 @@ class _NavShellState extends State<_NavShell> {
       ),
     ];
 
+    final mediaQuery = MediaQuery.of(context);
+    final screenWidth = mediaQuery.size.width;
+    final theme = Theme.of(context);
+    final bottomBarShadow = theme.colorScheme.shadow.withValues(alpha: 0.18);
+
+    // Consistent offset for both the Bar and the FAB
+    const double bottomOffset = 20.0;
+
+    final currentTitle = screens[_currentIndex] is _HomeBody
+        ? isAr
+              ? 'الرئيسية'
+              : 'Home'
+        : screens[_currentIndex] is TimelineScreen
+        ? isAr
+              ? 'الخط الزمني'
+              : 'Timeline'
+        : screens[_currentIndex] is BudgetsScreen
+        ? isAr
+              ? 'الميزانيات'
+              : 'Budgets'
+        : isAr
+        ? 'التحليلات'
+        : 'Analytics';
+
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        title: screens[_currentIndex] is _HomeBody
-            ? Text(
-                isAr ? 'الرئيسية' : 'Home',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 28,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              )
-            : screens[_currentIndex] is TimelineScreen
-            ? Text(
-                isAr ? 'الخط الزمني' : 'Timeline',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 28,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              )
-            : screens[_currentIndex] is BudgetsScreen
-            ? Text(
-                isAr ? 'الميزانيات' : 'Budgets',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 28,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              )
-            : Text(
-                isAr ? 'التحليلات' : 'Analytics',
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                  fontSize: 28,
-                  color: Theme.of(context).colorScheme.onSurface,
-                ),
-              ),
+        backgroundColor: theme.colorScheme.surface,
+        title: Text(
+          currentTitle,
+          style: theme.textTheme.titleLarge?.copyWith(
+            fontSize: 28,
+            color: theme.colorScheme.onSurface,
+          ),
+        ),
+        leading: IconButton(
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => AddExpenseScreen(userId: widget.user.id),
+            ),
+          ),
+          icon: const Icon(Icons.add, size: 32),
+        ),
         actions: [
           GestureDetector(
             onTap: () => Navigator.push(
@@ -323,7 +299,7 @@ class _NavShellState extends State<_NavShell> {
                 backgroundImage: widget.user.photoUrl != null
                     ? NetworkImage(widget.user.photoUrl!)
                     : null,
-                backgroundColor: AppColors.surfaceContainerHighest,
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
                 child: widget.user.photoUrl == null
                     ? Text(
                         widget.user.displayName.isNotEmpty
@@ -337,45 +313,95 @@ class _NavShellState extends State<_NavShell> {
           ),
         ],
       ),
-      body: screens[_currentIndex],
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() => _currentIndex = i),
-        indicatorColor: Theme.of(context).colorScheme.primaryContainer,
-        destinations: [
-          NavigationDestination(
-            icon: const Icon(Icons.dashboard_outlined),
-            selectedIcon: const Icon(Icons.dashboard),
-            label: isAr ? 'الرئيسية' : 'Home',
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.receipt_long_outlined),
-            selectedIcon: const Icon(Icons.receipt_long),
-            label: isAr ? 'الخط الزمني' : 'Timeline',
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.account_balance_wallet_outlined),
-            selectedIcon: const Icon(Icons.account_balance_wallet),
-            label: isAr ? 'الميزانيات' : 'Budgets',
-          ),
-          NavigationDestination(
-            icon: const Icon(Icons.bar_chart_outlined),
-            selectedIcon: const Icon(Icons.bar_chart),
-            label: isAr ? 'التحليلات' : 'Charts',
-          ),
-        ],
-      ),
-      floatingActionButton: _currentIndex == 0
-          ? FloatingActionButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => AddExpenseScreen(userId: widget.user.id),
+      body: BottomBar(
+        // Wrap the body in a Stack to layer the gradient behind the content
+        body: Stack(
+          children: [
+            screens[_currentIndex],
+
+            // The Gradient Layer at the bottom
+            Positioned(
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: 130, // Height of the fade effect
+              child: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      theme.colorScheme.surface.withValues(alpha: 0),
+                      theme.colorScheme.surface,
+                      theme.colorScheme.surface,
+                    ],
+                  ),
                 ),
               ),
-              child: const Icon(Icons.add, size: 32),
-            )
-          : null,
+            ),
+          ],
+        ),
+        layout: BottomBarLayout(
+          width: screenWidth - 48,
+          offset: bottomOffset, // Matches the FAB offset
+          borderRadius: BorderRadius.circular(28),
+          alignment: Alignment.bottomCenter,
+        ),
+        theme: BottomBarThemeData(
+          barDecoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: bottomBarShadow,
+                blurRadius: 28,
+                offset: const Offset(0, 12),
+              ),
+              BoxShadow(
+                color: theme.colorScheme.shadow.withValues(alpha: 0.08),
+                blurRadius: 6,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+        ),
+        motion: const BottomBarMotion.cupertino(
+          preset: BottomBarCupertinoMotion.smooth,
+          transition: BottomBarTransition.slideAndFade,
+        ),
+        child: BottomBarItems(
+          children: [
+            BottomBarItem(
+              icon: const Icon(Icons.dashboard_outlined),
+              selectedIcon: const Icon(Icons.dashboard),
+              label: Text(isAr ? 'الرئيسية' : 'Home'),
+              selected: _currentIndex == 0,
+              onTap: () => setState(() => _currentIndex = 0),
+            ),
+            BottomBarItem(
+              icon: const Icon(Icons.receipt_long_outlined),
+              selectedIcon: const Icon(Icons.receipt_long),
+              label: Text(isAr ? 'الخط الزمني' : 'Timeline'),
+              selected: _currentIndex == 1,
+              onTap: () => setState(() => _currentIndex = 1),
+            ),
+            BottomBarItem(
+              icon: const Icon(Icons.account_balance_wallet_outlined),
+              selectedIcon: const Icon(Icons.account_balance_wallet),
+              label: Text(isAr ? 'الميزانيات' : 'Budgets'),
+              selected: _currentIndex == 2,
+              onTap: () => setState(() => _currentIndex = 2),
+            ),
+            BottomBarItem(
+              icon: const Icon(Icons.bar_chart_outlined),
+              selectedIcon: const Icon(Icons.bar_chart),
+              label: Text(isAr ? 'التحليلات' : 'Charts'),
+              selected: _currentIndex == 3,
+              onTap: () => setState(() => _currentIndex = 3),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

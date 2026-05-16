@@ -3,6 +3,7 @@ import 'package:expense_tracker/features/expenses/domain/entities/expense_entity
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc.dart';
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
 import 'package:expense_tracker/features/expenses/presentation/widgets/expense_card.dart';
+import 'package:expense_tracker/features/expenses/presentation/widgets/no_expnese.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -72,82 +73,94 @@ class _TimelineScreenState extends State<TimelineScreen> {
             return const SizedBox();
           }
 
-          final groupedExpenses = _groupExpenses(
-            _visibleExpenses(state.expenses),
-          );
+          final allExpenses = state.expenses;
+          final isTotalEmpty = allExpenses.isEmpty;
+
+          // Determine scroll physics
+          final scrollPhysics = isTotalEmpty
+              ? const NeverScrollableScrollPhysics()
+              : const BouncingScrollPhysics();
+
+          final groupedExpenses = _groupExpenses(_visibleExpenses(allExpenses));
 
           return SafeArea(
             child: CustomScrollView(
+              physics: scrollPhysics,
               slivers: [
-                SliverPadding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 16,
-                  ),
-                  sliver: SliverToBoxAdapter(
-                    child: Column(
-                      children: [
-                        // Search Bar
-                        MySearchBar(
-                          controller: _searchController,
-                          onChanged: (_) => setState(() {}),
-                          hintText: isAr
-                              ? 'البحث عن المعاملات...'
-                              : 'Search transactions...',
-                        ),
-                        const SizedBox(height: 16),
-                        // Filter Chips
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: ['All Time', 'Week', 'Month', 'Year'].map(
-                              (f) {
-                                final isSelected = _filter == f;
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8),
-                                  child: ChoiceChip(
-                                    label: Text(f),
-                                    selected: isSelected,
-                                    onSelected: (v) =>
-                                        setState(() => _filter = f),
-                                    backgroundColor: Theme.of(
-                                      context,
-                                    ).colorScheme.surfaceContainerLowest,
-                                    selectedColor: Theme.of(
-                                      context,
-                                    ).colorScheme.primaryContainer,
-                                    labelStyle: TextStyle(
-                                      color: isSelected
-                                          ? Theme.of(
-                                              context,
-                                            ).colorScheme.onSecondaryContainer
-                                          : Theme.of(
-                                              context,
-                                            ).colorScheme.onSurfaceVariant,
-                                      fontWeight: isSelected
-                                          ? FontWeight.bold
-                                          : FontWeight.normal,
-                                    ),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(20),
-                                    ),
-                                  ),
-                                );
-                              },
-                            ).toList(),
-                          ),
-                        ),
-                      ],
+                // --- HEADER: Search & Filters ---
+                // Only show header if there are actual expenses in the database
+                if (!isTotalEmpty)
+                  SliverPadding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
                     ),
-                  ),
-                ),
-                if (groupedExpenses.isEmpty)
-                  SliverFillRemaining(
-                    child: Center(
-                      child: Text(
-                        isAr ? 'لا توجد معاملات' : 'No transactions found',
+                    sliver: SliverToBoxAdapter(
+                      child: Column(
+                        children: [
+                          // Search Bar
+                          MySearchBar(
+                            controller: _searchController,
+                            onChanged: (_) => setState(() {}),
+                            hintText: isAr
+                                ? 'البحث عن المعاملات...'
+                                : 'Search transactions...',
+                          ),
+                          const SizedBox(height: 16),
+                          // Filter Chips
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: ['All Time', 'Week', 'Month', 'Year']
+                                  .map((f) {
+                                    final isSelected = _filter == f;
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 8),
+                                      child: ChoiceChip(
+                                        label: Text(f),
+                                        selected: isSelected,
+                                        onSelected: (v) =>
+                                            setState(() => _filter = f),
+                                        backgroundColor: Theme.of(
+                                          context,
+                                        ).colorScheme.surfaceContainerLowest,
+                                        selectedColor: Theme.of(
+                                          context,
+                                        ).colorScheme.primaryContainer,
+                                        labelStyle: TextStyle(
+                                          color: isSelected
+                                              ? Theme.of(context)
+                                                    .colorScheme
+                                                    .onSecondaryContainer
+                                              : Theme.of(
+                                                  context,
+                                                ).colorScheme.onSurfaceVariant,
+                                          fontWeight: isSelected
+                                              ? FontWeight.bold
+                                              : FontWeight.normal,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            20,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  })
+                                  .toList(),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
+                  ),
+
+                // --- CONTENT: List or Empty State ---
+                if (groupedExpenses.isEmpty)
+                  NoExpense(
+                    isAr: isAr,
+                    userId: widget.userId,
+                    mainAxisAlignment: MainAxisAlignment.center,
                   )
                 else
                   ...groupedExpenses.entries.map((group) {
@@ -195,7 +208,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                               final expense = group.value[index];
                               return Padding(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 14.0,
                                   vertical: 4.0,
                                 ),
                                 child: ExpenseCard(
@@ -205,16 +217,6 @@ class _TimelineScreenState extends State<TimelineScreen> {
                               );
                             },
                           ),
-                          // Container(
-                          //   child: Column(
-                          //     children: group.value.map((expense) {
-                          //       return ExpenseCard(
-                          //         expense: expense,
-                          //         userId: widget.userId,
-                          //       );
-                          //     }).toList(),
-                          //   ),
-                          // ),
                         ]),
                       ),
                     );

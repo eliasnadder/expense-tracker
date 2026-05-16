@@ -21,7 +21,9 @@ class ExpenseCard extends StatelessWidget {
       builder: (dialogContext) {
         return AlertDialog(
           backgroundColor: theme.colorScheme.surfaceContainerHigh,
-          surfaceTintColor: Colors.transparent,
+          surfaceTintColor: Theme.of(
+            dialogContext,
+          ).colorScheme.surface.withValues(alpha: 0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(32),
           ),
@@ -121,32 +123,79 @@ class ExpenseCard extends StatelessWidget {
         ? AppColors.income
         : theme.colorScheme.onSurface;
 
+    final isAr = Localizations.localeOf(context).languageCode == 'ar';
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
       child: Dismissible(
         key: Key(expense.id),
         direction: DismissDirection.endToStart,
 
+        // --- ANIMATION SETTINGS ---
+        // Smoothness of the card flying off screen
+        movementDuration: const Duration(milliseconds: 400),
+        // Smoothness of the empty space closing up
+        resizeDuration: const Duration(milliseconds: 400),
+        // Requires a longer swipe (75%) to trigger, preventing accidental deletes
+        // CORRECTED SYNTAX HERE:
+        dismissThresholds: const {DismissDirection.endToStart: 0.75},
+
         confirmDismiss: (_) => _confirmDelete(context),
 
+        // --- ANIMATED BACKGROUND ---
         background: Container(
           alignment: Alignment.centerRight,
           padding: const EdgeInsets.symmetric(horizontal: 28),
           decoration: BoxDecoration(
-            color: theme.colorScheme.errorContainer,
+            // Gradient makes the reveal feel premium and dynamic
+            gradient: LinearGradient(
+              colors: [
+                theme.colorScheme.errorContainer,
+                theme.colorScheme.error,
+              ],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight,
+            ),
             borderRadius: BorderRadius.circular(32),
+            // Add a subtle shadow to the background itself for depth
+            boxShadow: [
+              BoxShadow(
+                color: theme.colorScheme.error.withValues(alpha: 0.3),
+                blurRadius: 12,
+                offset: const Offset(2, 4),
+              ),
+            ],
           ),
-          child: Icon(
-            Icons.delete_rounded,
-            color: theme.colorScheme.onErrorContainer,
-            size: 28,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              // Text that appears as you swipe
+              Text(
+                isAr ? 'حذف' : 'Delete',
+                style: textTheme.titleMedium?.copyWith(
+                  color: colors.onError,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Icon with a slight rotation for dynamic feel
+              Transform.rotate(
+                angle: -0.2, // Rotate slightly counter-clockwise
+                child: Icon(
+                  Icons.delete_rounded,
+                  color: colors.onError,
+                  size: 32,
+                ),
+              ),
+            ],
           ),
         ),
 
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: colors.surfaceContainerLow,
+            color: colors.surfaceContainerLowest,
             borderRadius: BorderRadius.circular(32),
             border: Border.all(
               color: colors.outlineVariant.withValues(alpha: 0.28),

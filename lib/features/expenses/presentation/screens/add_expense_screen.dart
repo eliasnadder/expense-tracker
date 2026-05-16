@@ -121,7 +121,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               decoration: BoxDecoration(
                                 color: _selectedType == 'expense'
                                     ? theme.colorScheme.errorContainer
-                                    : Colors.transparent,
+                                    : theme.colorScheme.surface.withValues(
+                                        alpha: 0,
+                                      ),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: Text(
@@ -129,7 +131,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: _selectedType == 'expense'
-                                      ? Colors.white
+                                      ? theme.colorScheme.onErrorContainer
                                       : theme.colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -148,7 +150,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                               decoration: BoxDecoration(
                                 color: _selectedType == 'income'
                                     ? theme.colorScheme.primaryContainer
-                                    : Colors.transparent,
+                                    : theme.colorScheme.surface.withValues(
+                                        alpha: 0,
+                                      ),
                                 borderRadius: BorderRadius.circular(100),
                               ),
                               child: Text(
@@ -156,7 +160,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   color: _selectedType == 'income'
-                                      ? Colors.white
+                                      ? theme.colorScheme.onPrimaryContainer
                                       : theme.colorScheme.onSurfaceVariant,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -210,7 +214,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           decoration: InputDecoration(
                             contentPadding: EdgeInsets.zero,
                             enabledBorder: InputBorder.none,
-                            fillColor: Colors.transparent,
+                            fillColor: theme.colorScheme.surface.withValues(
+                              alpha: 0,
+                            ),
                             hintText: '0.00',
                             hintStyle: TextStyle(
                               color: Theme.of(
@@ -265,7 +271,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                             border: Border.all(
                               color: isSelected
                                   ? theme.colorScheme.primary
-                                  : Colors.transparent,
+                                  : theme.colorScheme.surface.withValues(
+                                      alpha: 0,
+                                    ),
                             ),
                           ),
                           child: Column(
@@ -390,7 +398,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 context,
                               ).colorScheme.onSurfaceVariant.withAlpha(150),
                             ),
-                            fillColor: Colors.transparent,
+                            fillColor: theme.colorScheme.surface.withValues(
+                              alpha: 0,
+                            ),
                             enabledBorder: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                           ),
@@ -552,6 +562,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 onPressed: _submit,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primaryContainer,
+                  foregroundColor: theme.colorScheme.onPrimaryContainer,
                   minimumSize: const Size(double.infinity, 56),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(100),
@@ -564,7 +575,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.check),
+                    Icon(Icons.check),
                     const SizedBox(width: 8),
                     Text(
                       isAr
@@ -577,6 +588,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       style: textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
+                        color: theme.colorScheme.onPrimaryContainer,
                       ),
                     ),
                   ],
