@@ -1,3 +1,4 @@
+import 'package:expense_tracker/components/loading_ind/loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -10,7 +11,6 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
-  late Animation<double> _progressAnimation;
 
   @override
   void initState() {
@@ -19,15 +19,10 @@ class _SplashScreenState extends State<SplashScreen>
       vsync: this,
       duration: const Duration(seconds: 3),
     );
-    _progressAnimation =
-        Tween<double>(begin: 0.0, end: 1.0).animate(_controller)
-          ..addListener(() {
-            setState(() {});
-          });
 
     _controller.forward().then((_) {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/auth');
+        Navigator.pushReplacementNamed(context, '/biometric-gate');
       }
     });
   }
@@ -103,24 +98,7 @@ class _SplashScreenState extends State<SplashScreen>
                     ),
                   ),
                   const SizedBox(height: 16),
-                  Container(
-                    width: 192,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(100),
-                    ),
-                    child: FractionallySizedBox(
-                      alignment: Alignment.centerLeft,
-                      widthFactor: _progressAnimation.value,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primary,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
-                    ),
-                  ),
+                  LoadingIndicator(size: 40),
                 ],
               ),
             ),

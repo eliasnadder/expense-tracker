@@ -1,9 +1,9 @@
+import 'package:expense_tracker/components/loading_ind/loading_indicator.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class GoogleSignInButton extends StatefulWidget {
   final bool isLoading;
@@ -56,14 +56,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
           ),
         ),
         child: widget.isLoading
-            ? SizedBox(
-                width: 24,
-                height: 24,
-                child: LoadingAnimationWidget.inkDrop(
-                  color: theme.colorScheme.primary,
-                  size: 20,
-                ),
-              )
+            ? SizedBox(width: 24, height: 24, child: LoadingIndicator(size: 20))
             : Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
