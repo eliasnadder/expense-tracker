@@ -29,3 +29,5 @@ class SetBudget extends BudgetEvent {
   @override
   List<Object?> get props => [userId, category, amount, month, year];
 }
+
+class ClearBudgets extends BudgetEvent {}

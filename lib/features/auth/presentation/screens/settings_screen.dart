@@ -142,11 +142,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: isAr ? 'تسجيل الخروج' : 'Sign out',
                     value: '',
                     destructive: true,
-                    onTap: () {
-                      context.read<AuthBloc>().add(SignOutRequested());
-                      Navigator.of(
-                        context,
-                      ).pushNamedAndRemoveUntil('/login', (route) => false);
+                    onTap: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(isAr ? 'تسجيل الخروج' : 'Sign out'),
+                          content: Text(
+                            isAr
+                                ? 'هل أنت متأكد أنك تريد تسجيل الخروج؟'
+                                : 'Are you sure you want to sign out?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text(isAr ? 'إلغاء' : 'Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: Text(
+                                isAr ? 'خروج' : 'Sign out',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true && context.mounted) {
+                        context.read<AuthBloc>().add(SignOutRequested());
+                        Navigator.of(
+                          context,
+                        ).pushNamedAndRemoveUntil('/login', (route) => false);
+                      }
                     },
                   ),
                 ],

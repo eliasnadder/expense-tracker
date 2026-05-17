@@ -20,7 +20,13 @@ class BudgetBloc extends Bloc<BudgetEvent, BudgetState> {
   BudgetBloc({required this.budgetRepository}) : super(BudgetInitial()) {
     on<LoadBudgets>(_onLoadBudgets);
     on<SetBudget>(_onSetBudget);
+    on<ClearBudgets>(_onClearBudgets);
     on<_BudgetsUpdated>((event, emit) => emit(BudgetLoaded(event.budgets)));
+  }
+
+  void _onClearBudgets(ClearBudgets event, Emitter<BudgetState> emit) {
+    _budgetSubscription?.cancel();
+    emit(BudgetInitial());
   }
 
   Future<void> _onLoadBudgets(

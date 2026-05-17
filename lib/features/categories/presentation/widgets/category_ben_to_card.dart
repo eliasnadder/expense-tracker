@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class CategoryBentoCard extends StatelessWidget {
   final String title;
@@ -73,6 +74,9 @@ class CategoryBentoCard extends StatelessWidget {
           ),
         ],
       ),
-    );
+    )
+        .animate()
+        .fade(duration: 300.ms)
+        .slideY(begin: 0.15, duration: 300.ms, curve: Curves.easeOutQuad);
   }
 }

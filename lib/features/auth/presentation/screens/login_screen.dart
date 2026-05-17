@@ -46,21 +46,19 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 40),
-
                   // Logo
                   ClipRRect(
                     borderRadius: BorderRadius.circular(24),
                     child: Image.asset(
                       'assets/logo/logo.png',
-                      width: 96,
-                      height: 96,
+                      width: 175,
+                      height: 175,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) =>
-                          const Icon(Icons.account_balance_wallet, size: 96),
+                          const Icon(Icons.account_balance_wallet, size: 150),
                     ),
                   ),
-                  const SizedBox(height: 32),
-
+                  const SizedBox(height: 8),
                   // Headline
                   Text(
                     'Welcome Back',

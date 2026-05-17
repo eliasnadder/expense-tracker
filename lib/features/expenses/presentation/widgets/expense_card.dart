@@ -4,6 +4,7 @@ import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
 class ExpenseCard extends StatelessWidget {
@@ -15,12 +16,12 @@ class ExpenseCard extends StatelessWidget {
   Future<bool> _confirmDelete(BuildContext context) async {
     final isAr = Localizations.localeOf(context).languageCode == 'ar';
     final theme = Theme.of(context);
-
+    final color = theme.colorScheme;
     final shouldDelete = await showDialog<bool>(
       context: context,
       builder: (dialogContext) {
         return AlertDialog(
-          backgroundColor: theme.colorScheme.surfaceContainerHigh,
+          backgroundColor: color.surfaceContainerHigh,
           surfaceTintColor: Theme.of(
             dialogContext,
           ).colorScheme.surface.withValues(alpha: 0),
@@ -36,12 +37,12 @@ class ExpenseCard extends StatelessWidget {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.errorContainer,
+                  color: color.errorContainer,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.delete_outline_rounded,
-                  color: theme.colorScheme.onErrorContainer,
+                  color: color.onErrorContainer,
                   size: 26,
                 ),
               ),
@@ -88,11 +89,10 @@ class ExpenseCard extends StatelessWidget {
               onPressed: () {
                 Navigator.of(dialogContext).pop(true);
               },
-              icon: const Icon(Icons.delete_rounded, size: 18),
               label: Text(isAr ? 'حذف' : 'Delete'),
               style: FilledButton.styleFrom(
                 backgroundColor: theme.colorScheme.error,
-                foregroundColor: theme.colorScheme.onError,
+                foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 14,
@@ -122,8 +122,6 @@ class ExpenseCard extends StatelessWidget {
     final amountColor = expense.isIncome
         ? AppColors.income
         : theme.colorScheme.onSurface;
-
-    final isAr = Localizations.localeOf(context).languageCode == 'ar';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
@@ -169,22 +167,11 @@ class ExpenseCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              // Text that appears as you swipe
-              Text(
-                isAr ? 'حذف' : 'Delete',
-                style: textTheme.titleMedium?.copyWith(
-                  color: colors.onError,
-                  fontWeight: FontWeight.bold,
-                  letterSpacing: 1.2,
-                ),
-              ),
-              const SizedBox(width: 12),
-              // Icon with a slight rotation for dynamic feel
               Transform.rotate(
                 angle: -0.2, // Rotate slightly counter-clockwise
                 child: Icon(
                   Icons.delete_rounded,
-                  color: colors.onError,
+                  color: Colors.white,
                   size: 32,
                 ),
               ),
@@ -265,7 +252,10 @@ class ExpenseCard extends StatelessWidget {
           ),
         ),
       ),
-    );
+    )
+        .animate()
+        .fade(duration: 300.ms)
+        .slideY(begin: 0.1, duration: 300.ms, curve: Curves.easeOutQuad);
   }
 
   Color _getCategoryColor(BuildContext context, String category) {

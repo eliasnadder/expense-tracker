@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:expense_tracker/core/service/biometric_service.dart';
 import 'package:expense_tracker/features/auth/domain/entities/user_entity.dart';
 import 'package:expense_tracker/features/auth/domain/repositories/auth_repository.dart';
 import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart';
@@ -106,6 +107,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     SignOutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    await BiometricService.setBiometricEnabled(false);
     await authRepository.signOut();
     emit(AuthUnauthenticated());
   }

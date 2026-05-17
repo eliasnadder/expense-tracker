@@ -7,6 +7,7 @@ import 'package:expense_tracker/features/expenses/presentation/bloc/expense_even
 import 'package:expense_tracker/features/expenses/presentation/widgets/styled_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 import 'package:path_drawing/path_drawing.dart';
 import 'package:uuid/uuid.dart';
@@ -522,7 +523,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                     ),
                   ),
                   const SizedBox(height: 120), // Bottom padding for FAB area
-                ],
+                ]
+                    .animate(interval: 50.ms)
+                    .fade(duration: 400.ms)
+                    .slideY(begin: 0.05, duration: 400.ms, curve: Curves.easeOutQuad),
               ),
             ),
           ),

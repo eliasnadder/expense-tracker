@@ -19,9 +19,16 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
 
     on<DeleteCategory>(_onDeleteCategory);
 
+    on<ClearCategories>(_onClearCategories);
+
     on<CategoriesUpdated>((event, emit) {
       emit(CategoryLoaded(event.categories));
     });
+  }
+
+  void _onClearCategories(ClearCategories event, Emitter<CategoryState> emit) {
+    _subscription?.cancel();
+    emit(CategoryInitial());
   }
 
   Future<void> _onLoadCategories(

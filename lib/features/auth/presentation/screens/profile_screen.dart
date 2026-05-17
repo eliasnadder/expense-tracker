@@ -10,6 +10,7 @@ import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -75,15 +76,47 @@ class ProfileScreen extends StatelessWidget {
                       context,
                       MaterialPageRoute(builder: (_) => const SettingsScreen()),
                     ),
-                    onSignOut: () {
-                      context.read<AuthBloc>().add(SignOutRequested());
-                      Navigator.of(
-                        context,
-                      ).pushNamedAndRemoveUntil('/login', (route) => false);
+                    onSignOut: () async {
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: Text(isAr ? 'تسجيل الخروج' : 'Sign out'),
+                          content: Text(
+                            isAr
+                                ? 'هل أنت متأكد أنك تريد تسجيل الخروج؟'
+                                : 'Are you sure you want to sign out?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: Text(isAr ? 'إلغاء' : 'Cancel'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              child: Text(
+                                isAr ? 'خروج' : 'Sign out',
+                                style: TextStyle(
+                                  color: Theme.of(context).colorScheme.error,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true && context.mounted) {
+                        context.read<AuthBloc>().add(SignOutRequested());
+                        Navigator.of(
+                          context,
+                        ).pushNamedAndRemoveUntil('/login', (route) => false);
+                      }
                     },
                   ),
                   const SizedBox(height: 16),
-                ],
+                ]
+                    .animate(interval: 100.ms)
+                    .fade(duration: 400.ms)
+                    .slideX(begin: 0.1, duration: 400.ms, curve: Curves.easeOutQuad),
               );
             },
           );

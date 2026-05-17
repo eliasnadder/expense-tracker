@@ -38,3 +38,5 @@ class DeleteExpense extends ExpenseEvent {
   @override
   List<Object?> get props => [userId, expenseId];
 }
+
+class ClearExpenses extends ExpenseEvent {}

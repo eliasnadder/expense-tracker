@@ -19,6 +19,7 @@ import 'package:expense_tracker/features/expenses/presentation/widgets/no_expnes
 import 'package:flutter/material.dart';
 import 'package:flutter_floating_bottom_bar/flutter_floating_bottom_bar.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 // ─── Layout Constants ──────────────────────────────────────────────────────────
@@ -75,10 +76,10 @@ class _HomeBodyState extends State<_HomeBody> {
 
   TextStyle? _sectionTitleStyle(BuildContext context) =>
       Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontSize: _kSectionFontSize,
-            fontWeight: FontWeight.bold,
-            color: Theme.of(context).colorScheme.onSurface,
-          );
+        fontSize: _kSectionFontSize,
+        fontWeight: FontWeight.bold,
+        color: Theme.of(context).colorScheme.onSurface,
+      );
 
   Widget _buildSectionHeader({
     required BuildContext context,
@@ -108,10 +109,6 @@ class _HomeBodyState extends State<_HomeBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _buildSectionHeader(
-          context: context,
-          title: isAr ? 'الميزانية الشهرية' : 'Monthly Budget',
-        ),
         BlocBuilder<BudgetBloc, BudgetState>(
           builder: (context, budgetState) {
             final totalLimit = budgetState is BudgetLoaded
@@ -156,14 +153,14 @@ class _HomeBodyState extends State<_HomeBody> {
   }
 
   Widget _buildLoadingState() => SliverFillRemaining(
-        hasScrollBody: false,
-        child: Center(
-          child: LoadingAnimationWidget.inkDrop(
-            color: const Color(0xFF6750A4),
-            size: 20,
-          ),
-        ),
-      );
+    hasScrollBody: false,
+    child: Center(
+      child: LoadingAnimationWidget.inkDrop(
+        color: const Color(0xFF6750A4),
+        size: 20,
+      ),
+    ),
+  );
 
   Widget _buildEmptyState(bool isAr) {
     return NoExpense(
@@ -215,8 +212,8 @@ class _HomeBodyState extends State<_HomeBody> {
     final filtered = _selectedCategory == 'All'
         ? expenses
         : expenses
-            .where((expense) => expense.category == _selectedCategory)
-            .toList();
+              .where((expense) => expense.category == _selectedCategory)
+              .toList();
     return filtered.take(_kMaxRecent).toList();
   }
 
@@ -238,7 +235,7 @@ class _HomeBodyState extends State<_HomeBody> {
         final hasRecentExpenses = recentExpenses.isNotEmpty;
 
         final scrollPhysics = hasRecentExpenses
-            ? const BouncingScrollPhysics()
+            ? const ClampingScrollPhysics()
             : const NeverScrollableScrollPhysics();
 
         return CustomScrollView(
@@ -252,7 +249,10 @@ class _HomeBodyState extends State<_HomeBody> {
                   const SizedBox(height: 16),
                   _buildCategoriesSection(context, isAr),
                   const SizedBox(height: 16),
-                ],
+                ]
+                    .animate(interval: 100.ms)
+                    .fade(duration: 400.ms)
+                    .slideY(begin: 0.1, duration: 400.ms, curve: Curves.easeOutQuad),
               ),
             ),
             if (expenseState is ExpenseLoading)
@@ -336,8 +336,9 @@ class _NavShellState extends State<_NavShell> {
     required Color activeColor,
   }) {
     final theme = Theme.of(context);
-    final borderColor =
-        isSelected ? activeColor : theme.colorScheme.outlineVariant;
+    final borderColor = isSelected
+        ? activeColor
+        : theme.colorScheme.outlineVariant;
 
     return Container(
       decoration: BoxDecoration(
@@ -453,8 +454,9 @@ class _NavShellState extends State<_NavShell> {
     final screenWidth = MediaQuery.of(context).size.width;
     final theme = Theme.of(context);
     final activeColor = theme.colorScheme.primary;
-    final inactiveColor =
-        theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
+    final inactiveColor = theme.colorScheme.onSurfaceVariant.withValues(
+      alpha: 0.6,
+    );
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,

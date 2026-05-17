@@ -1,4 +1,3 @@
-
 import 'package:expense_tracker/features/categories/domain/entities/category_entity.dart';
 
 abstract class CategoryEvent {}
@@ -25,10 +24,7 @@ class DeleteCategory extends CategoryEvent {
   final String userId;
   final String categoryId;
 
-  DeleteCategory(
-    this.userId,
-    this.categoryId,
-  );
+  DeleteCategory(this.userId, this.categoryId);
 }
 
 class CategoriesUpdated extends CategoryEvent {
@@ -36,3 +32,5 @@ class CategoriesUpdated extends CategoryEvent {
 
   CategoriesUpdated(this.categories);
 }
+
+class ClearCategories extends CategoryEvent {}

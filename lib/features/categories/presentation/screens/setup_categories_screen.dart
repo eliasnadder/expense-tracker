@@ -6,6 +6,7 @@ import 'package:expense_tracker/features/auth/presentation/bloc/auth_event.dart'
 import 'package:expense_tracker/features/categories/domain/entities/category_entity.dart';
 import 'package:expense_tracker/features/categories/presentation/bloc/category_bloc.dart';
 import 'package:expense_tracker/features/categories/presentation/bloc/category_event.dart';
+import 'package:expense_tracker/features/expenses/presentation/widgets/styled_input_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -31,9 +32,25 @@ class _SetupCategoriesScreenState extends State<SetupCategoriesScreen> {
   bool _showCustomForm = false;
 
   final List<String> _emojis = [
-    '🍔', '🚗', '🛍️', '💡', '💊', '🎮', '📚',
-    '💰', '🎁', '📈', '🏠', '🐾', '👕', '✈️',
-    '🎓', '🏋️', '🎬', '☕', '📦',
+    '🍔',
+    '🚗',
+    '🛍️',
+    '💡',
+    '💊',
+    '🎮',
+    '📚',
+    '💰',
+    '🎁',
+    '📈',
+    '🏠',
+    '🐾',
+    '👕',
+    '✈️',
+    '🎓',
+    '🏋️',
+    '🎬',
+    '☕',
+    '📦',
   ];
 
   @override
@@ -200,7 +217,10 @@ class _SetupCategoriesScreenState extends State<SetupCategoriesScreen> {
                         children: [
                           Row(
                             children: [
-                              Text(cat.emoji, style: const TextStyle(fontSize: 28)),
+                              Text(
+                                cat.emoji,
+                                style: const TextStyle(fontSize: 28),
+                              ),
                               const SizedBox(width: 12),
                               Expanded(
                                 child: Text(
@@ -228,26 +248,20 @@ class _SetupCategoriesScreenState extends State<SetupCategoriesScreen> {
                                 ),
                                 const SizedBox(width: 8),
                                 Expanded(
-                                  child: SizedBox(
-                                    height: 40,
-                                    child: TextField(
-                                      keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                                      decoration: InputDecoration(
-                                        prefixText: '\$ ',
-                                        hintText: isAr ? 'اختياري' : 'Optional',
-                                        border: OutlineInputBorder(
-                                          borderRadius: BorderRadius.circular(12),
-                                        ),
-                                        contentPadding: const EdgeInsets.symmetric(
-                                          horizontal: 12,
-                                          vertical: 8,
-                                        ),
-                                      ),
-                                      onChanged: (value) {
-                                        final parsed = double.tryParse(value);
-                                        _categoryLimits[cat.name] = parsed ?? 0;
-                                      },
+                                  child: StyledInputField(
+                                    height: 54,
+                                    label: 'optinal',
+                                    hintText: isAr ? 'اختياري' : 'Optional',
+                                    keyboardType:
+                                        const TextInputType.numberWithOptions(),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 8,
                                     ),
+                                    onChanged: (value) {
+                                      final parsed = double.tryParse(value);
+                                      _categoryLimits[cat.name] = parsed ?? 0;
+                                    },
                                   ),
                                 ),
                               ],
@@ -297,7 +311,9 @@ class _SetupCategoriesScreenState extends State<SetupCategoriesScreen> {
                       ),
                       title: Text(custom['name'] as String),
                       subtitle: (custom['limit'] as double) > 0
-                          ? Text('\$${(custom['limit'] as double).toStringAsFixed(0)}')
+                          ? Text(
+                              '\$${(custom['limit'] as double).toStringAsFixed(0)}',
+                            )
                           : null,
                       trailing: IconButton(
                         icon: const Icon(Icons.close, size: 20),
@@ -319,27 +335,21 @@ class _SetupCategoriesScreenState extends State<SetupCategoriesScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextField(
+                          StyledInputField(
                             controller: _customNameController,
-                            decoration: InputDecoration(
-                              labelText: isAr ? 'اسم الفئة' : 'Category Name',
-                              hintText: isAr ? 'مثال: سفر' : 'e.g. Travel',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
+                            label: isAr ? 'اسم الفئة' : 'Category Name',
+                            hintText: isAr ? 'مثال: سفر' : 'e.g. Travel',
                           ),
                           const SizedBox(height: 12),
-                          TextField(
+                          StyledInputField(
                             controller: _customLimitController,
-                            keyboardType: const TextInputType.numberWithOptions(decimal: true),
-                            decoration: InputDecoration(
-                              labelText: isAr ? 'الحد الشهري (اختياري)' : 'Monthly Limit (optional)',
-                              prefixText: '\$ ',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
+                            keyboardType: const TextInputType.numberWithOptions(
+                              decimal: true,
                             ),
+                            label: isAr
+                                ? 'الحد الشهري (اختياري)'
+                                : 'Monthly Limit (optional)',
+                            prefixText: '\$ ',
                           ),
                           const SizedBox(height: 12),
                           Text(
@@ -353,21 +363,28 @@ class _SetupCategoriesScreenState extends State<SetupCategoriesScreen> {
                             children: _emojis.map((emoji) {
                               final selected = emoji == _customEmoji;
                               return GestureDetector(
-                                onTap: () => setState(() => _customEmoji = emoji),
+                                onTap: () =>
+                                    setState(() => _customEmoji = emoji),
                                 child: Container(
                                   width: 40,
                                   height: 40,
                                   decoration: BoxDecoration(
                                     color: selected
                                         ? colorScheme.primaryContainer
-                                        : colorScheme.surfaceContainerHighest,
+                                        : colorScheme.surfaceContainerHigh,
                                     borderRadius: BorderRadius.circular(10),
                                     border: selected
-                                        ? Border.all(color: colorScheme.primary, width: 2)
+                                        ? Border.all(
+                                            color: colorScheme.primary,
+                                            width: 2,
+                                          )
                                         : null,
                                   ),
                                   child: Center(
-                                    child: Text(emoji, style: const TextStyle(fontSize: 20)),
+                                    child: Text(
+                                      emoji,
+                                      style: const TextStyle(fontSize: 20),
+                                    ),
                                   ),
                                 ),
                               );

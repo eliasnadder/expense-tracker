@@ -76,9 +76,18 @@ class AuthRepositoryImpl implements AuthRepository {
 
     final userCredential = await firebaseAuth.signInWithCredential(credential);
     final user = userCredential.user!;
-    final userModel = UserModel.fromFirebaseUser(user);
+    
+    // Check if user already exists in Firestore
+    try {
+      final doc = await firestore.collection('users').doc(user.uid).get();
+      if (doc.exists) {
+        // Return existing user data to preserve isSetupComplete
+        return UserModel.fromMap(doc.data()!);
+      }
+    } catch (_) {}
 
-    // ✅ لا نوقف العملية لو فشل الحفظ
+    // User is new, create basic record
+    final userModel = UserModel.fromFirebaseUser(user);
     try {
       await firestore
           .collection('users')
@@ -97,7 +106,7 @@ class AuthRepositoryImpl implements AuthRepository {
       email: email,
       password: password,
     );
-    return UserModel.fromFirebaseUser(userCredential.user!);
+    return _getUserWithFirestoreData(userCredential.user!);
   }
 
   @override

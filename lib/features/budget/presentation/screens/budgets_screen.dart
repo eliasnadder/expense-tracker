@@ -31,7 +31,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
 
     // 1. Scaffold moved to the root to guarantee size constraints
     return Scaffold(
-      backgroundColor: theme.colorScheme.surface,
+      backgroundColor: color.surface,
       body: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, authState) {
           if (authState is! AuthAuthenticated) {
@@ -186,7 +186,7 @@ class _BudgetsScreenState extends State<BudgetsScreen> {
                               Container(
                                 padding: const EdgeInsets.all(20),
                                 decoration: BoxDecoration(
-                                  color: color.surfaceContainerHighest,
+                                  color: color.surfaceContainerHigh,
                                   borderRadius: BorderRadius.circular(28),
                                 ),
                                 child: Column(
@@ -390,7 +390,7 @@ class _OverviewCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
+        color: colorScheme.surfaceContainerHigh,
         borderRadius: BorderRadius.circular(28),
       ),
       child: Column(

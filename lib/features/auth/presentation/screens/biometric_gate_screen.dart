@@ -1,5 +1,6 @@
 import 'package:expense_tracker/components/loading_ind/loading_indicator.dart';
 import 'package:expense_tracker/core/service/biometric_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class BiometricGateScreen extends StatefulWidget {
@@ -20,6 +21,12 @@ class _BiometricGateScreenState extends State<BiometricGateScreen> {
   }
 
   Future<void> _handleAuthentication() async {
+    // Skip biometrics if user is not logged in
+    if (FirebaseAuth.instance.currentUser == null) {
+      _goToAuth();
+      return;
+    }
+
     final isEnabled = await BiometricService.isBiometricEnabled();
 
     // Biometrics disabled → continue normally
@@ -43,7 +50,11 @@ class _BiometricGateScreenState extends State<BiometricGateScreen> {
   }
 
   void _goToAuth() {
-    Navigator.pushReplacementNamed(context, '/auth');
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/auth');
+      }
+    });
   }
 
   Future<void> _retry() async {

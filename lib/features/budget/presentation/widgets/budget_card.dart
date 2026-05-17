@@ -7,6 +7,7 @@ import 'package:expense_tracker/features/expenses/presentation/bloc/expense_bloc
 import 'package:expense_tracker/features/expenses/presentation/bloc/expense_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:intl/intl.dart';
 
 class BudgetCard extends StatefulWidget {
@@ -269,7 +270,10 @@ class _BudgetCardState extends State<BudgetCard> {
                   ],
                 ],
               ),
-            );
+            )
+                .animate()
+                .fade(duration: 400.ms)
+                .scale(begin: const Offset(0.95, 0.95), duration: 400.ms, curve: Curves.easeOutQuad);
           },
         );
       },

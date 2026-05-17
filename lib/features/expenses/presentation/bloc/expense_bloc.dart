@@ -15,7 +15,13 @@ class ExpenseBloc extends Bloc<ExpenseEvent, ExpenseState> {
     on<AddExpense>(_onAddExpense);
     on<UpdateExpense>(_onUpdateExpense);
     on<DeleteExpense>(_onDeleteExpense);
+    on<ClearExpenses>(_onClearExpenses);
     on<_ExpensesUpdated>((event, emit) => emit(ExpenseLoaded(event.expenses)));
+  }
+
+  void _onClearExpenses(ClearExpenses event, Emitter<ExpenseState> emit) {
+    _expenseSubscription?.cancel();
+    emit(ExpenseInitial());
   }
 
   void _onLoadExpenses(LoadExpenses event, Emitter<ExpenseState> emit) {

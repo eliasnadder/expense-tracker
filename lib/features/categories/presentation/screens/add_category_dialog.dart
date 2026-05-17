@@ -162,7 +162,7 @@ class _AddCategoryDialogState extends State<AddCategoryDialog> {
                     decoration: BoxDecoration(
                       color: selected
                           ? theme.colorScheme.primaryContainer
-                          : theme.colorScheme.surfaceContainerHighest,
+                          : theme.colorScheme.surfaceContainerHigh,
                       borderRadius: BorderRadius.circular(12),
                       border: selected
                           ? Border.all(

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 /// read-only fields (like date pickers) by providing [onTap] and [trailing].
 class StyledInputField extends StatelessWidget {
   final TextEditingController? controller;
-  final String label;
+  final String? label;
   final String? hintText;
   final String? prefixText;
   final String? valueText;
@@ -16,6 +16,7 @@ class StyledInputField extends StatelessWidget {
   final double? height;
   final Widget? trailing;
   final VoidCallback? onTap;
+  final Function(String)? onChanged;
   final String? Function(String?)? validator;
   final EdgeInsetsGeometry? contentPadding;
   final double borderRadius;
@@ -23,7 +24,7 @@ class StyledInputField extends StatelessWidget {
   const StyledInputField({
     super.key,
     this.controller,
-    required this.label,
+    this.label,
     this.hintText,
     this.prefixText,
     this.valueText,
@@ -33,6 +34,7 @@ class StyledInputField extends StatelessWidget {
     this.height,
     this.trailing,
     this.onTap,
+    this.onChanged,
     this.validator,
     this.contentPadding,
     this.borderRadius = 100,
@@ -50,11 +52,9 @@ class StyledInputField extends StatelessWidget {
       onTap: readOnly ? onTap : null,
       child: Container(
         height: height ?? 70,
-        padding: contentPadding ??
-            const EdgeInsets.symmetric(
-              horizontal: 24,
-              vertical: 12,
-            ),
+        padding:
+            contentPadding ??
+            const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
         decoration: BoxDecoration(
           color: theme.colorScheme.surfaceContainerHigh,
           borderRadius: BorderRadius.circular(borderRadius),
@@ -67,17 +67,19 @@ class StyledInputField extends StatelessWidget {
           ],
         ),
         child: Row(
-          crossAxisAlignment:
-              _isMultiLine ? CrossAxisAlignment.start : CrossAxisAlignment.center,
+          crossAxisAlignment: _isMultiLine
+              ? CrossAxisAlignment.start
+              : CrossAxisAlignment.center,
           children: [
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment:
-                    _isMultiLine ? MainAxisAlignment.start : MainAxisAlignment.center,
+                mainAxisAlignment: _isMultiLine
+                    ? MainAxisAlignment.start
+                    : MainAxisAlignment.center,
                 children: [
                   Text(
-                    label,
+                    label??'',
                     style: textTheme.labelMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
@@ -95,9 +97,10 @@ class StyledInputField extends StatelessWidget {
                           hintText: hintText,
                           prefixText: prefixText,
                           hintStyle: TextStyle(
-                            color: Theme.of(
-                              context,
-                            ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurfaceVariant
+                                .withValues(alpha: 0.5),
                           ),
                           fillColor: theme.colorScheme.surface.withValues(
                             alpha: 0,
@@ -108,9 +111,11 @@ class StyledInputField extends StatelessWidget {
                           isDense: true,
                         ),
                         style: textTheme.bodyLarge?.copyWith(
-                          height:
-                              maxLines != null && maxLines! > 1 ? 1.5 : null,
+                          height: maxLines != null && maxLines! > 1
+                              ? 1.5
+                              : null,
                         ),
+                        onChanged: onChanged,
                       ),
                     )
                   else if (valueText != null)
@@ -127,9 +132,7 @@ class StyledInputField extends StatelessWidget {
             ),
             if (trailing != null)
               Padding(
-                padding: EdgeInsets.only(
-                  top: _isMultiLine ? 4 : 0,
-                ),
+                padding: EdgeInsets.only(top: _isMultiLine ? 4 : 0),
                 child: trailing!,
               ),
           ],

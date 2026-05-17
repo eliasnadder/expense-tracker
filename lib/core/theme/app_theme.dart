@@ -232,6 +232,12 @@ class AppTheme {
       outlineVariant: AppColors.outlineVariant,
       brightness: Brightness.light,
     ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
+    ),
     textTheme: _lightTextTheme,
     appBarTheme: AppBarTheme(
       backgroundColor: AppColors.surfaceContainerLow,
@@ -346,6 +352,12 @@ class AppTheme {
       inverseSurface: _DarkColors.onSurface,
       onInverseSurface: _DarkColors.surface,
       inversePrimary: AppColors.primary,
+    ),
+    pageTransitionsTheme: const PageTransitionsTheme(
+      builders: {
+        TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+        TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+      },
     ),
     textTheme: _darkTextTheme,
     appBarTheme: AppBarTheme(

@@ -63,6 +63,10 @@ class MyApp extends StatelessWidget {
             context.read<ExpenseBloc>().add(LoadExpenses(state.user.id));
             context.read<BudgetBloc>().add(LoadBudgets(state.user.id));
             context.read<CategoryBloc>().add(LoadCategories(state.user.id));
+          } else if (state is AuthUnauthenticated) {
+            context.read<ExpenseBloc>().add(ClearExpenses());
+            context.read<BudgetBloc>().add(ClearBudgets());
+            context.read<CategoryBloc>().add(ClearCategories());
           }
         },
         child: BlocBuilder<ThemeCubit, ThemeMode>(

@@ -1,4 +1,5 @@
 import 'package:expense_tracker/components/loading_ind/loading_indicator.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -22,7 +23,11 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward().then((_) {
       if (mounted) {
-        Navigator.pushReplacementNamed(context, '/biometric-gate');
+        if (FirebaseAuth.instance.currentUser != null) {
+          Navigator.pushReplacementNamed(context, '/biometric-gate');
+        } else {
+          Navigator.pushReplacementNamed(context, '/auth');
+        }
       }
     });
   }
@@ -49,8 +54,8 @@ class _SplashScreenState extends State<SplashScreen>
               child: Column(
                 children: [
                   Container(
-                    width: 148,
-                    height: 148,
+                    width: 175,
+                    height: 175,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(32),
                       boxShadow: [
@@ -67,6 +72,8 @@ class _SplashScreenState extends State<SplashScreen>
                     child: Image.asset(
                       'assets/logo/logo.png',
                       fit: BoxFit.cover,
+                      width: 175,
+                      height: 175,
                     ),
                   ),
                   const SizedBox(height: 32),
